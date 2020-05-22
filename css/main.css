@@ -1,0 +1,142 @@
+html, body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  font-family: Sans Serif;
+}
+
+#desktop {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+#menubar {
+	width: 100%;
+	height: 3%;
+	display: block;
+	background-color: #777;
+}
+
+#canvasarea {
+	width: 70%;
+	height: 94%;
+	display: block;
+	overflow: auto;
+}
+
+#toolbar {
+	width: 30%;
+	height: 94%;
+	display: block;
+	overflow: auto;
+}
+
+#statusbar {
+	width: 100%;
+	height: 3%;
+	display: block;
+	background-color: #777;
+}
+
+.menu {
+	position: relative;
+	display: inline-block;
+	margin-left: 15px;
+}
+
+.title:hover{
+	color: #FFF;
+}
+
+.menu_content {
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	display: none;
+	background-color: #777;
+}
+
+.menu_content > li:hover {
+	color: #FFF;
+}
+
+.popup {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0,0,0,0.3);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.window {
+	width: 50%;
+	height: 50%;
+	overflow: auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-around;
+	background-color: white;
+	border: solid 1px black;
+}
+
+.row {
+	width: 80%;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+}
+
+#tileIcons {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.tileIcon {
+	display: block;
+}
+
+.tile {
+	display: inline-flex;
+	flex-wrap: wrap;
+	margin: 2px;
+}
+
+.tileBorder{
+	background-color: black;
+}
+
+.square {
+	display: block;
+	background-color: red;
+}
+
+#eraser {
+	display: inline-block;
+	width: 32px;
+	height: 32px;
+	background-color: yellow;
+	margin: 2px;
+}
+
+#bucket {
+	display: block;
+	width: 32px;
+	height: 32px;
+	background-color: green;
+	margin: 2px;
+}
