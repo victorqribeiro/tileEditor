@@ -7,6 +7,8 @@ A 2D tile editor that runs on the browser.
 Live version [here](https://victorribeiro.com/tileEditor/)  
 Alternative link [here](https://victorqribeiro.github.io/tileEditor/)
 
+**[How to use the tool](https://www.youtube.com/watch?v=rtw1AoJN00o)**
+
 # About
 
 I made this tool for personal use, but now I'm releasing it under MIT license. You can learn more about this project by watching the videos I made while working on it.
