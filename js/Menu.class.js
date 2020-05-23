@@ -79,7 +79,7 @@ const Menu  = {
 		'load': (arguments = null) => {
 			if( !arguments ){
 				const conf = {
-					'image': 'file'
+					'file': 'file'
 				}
 				return Menu.showWindow( conf, Menu.map.load )
 			}
