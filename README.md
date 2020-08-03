@@ -72,7 +72,7 @@ layers - Add or remove a layer
 E - Erase brush (erase a tile from the map)  
 B - Paint bucket tool (paint a whole region on the map)  
 
+------
 
-# Disclaimer
 
-I'm releasing this tool as it is cause I don't have time right now to work on it. There's still a lot of things that I would love to implement and improve, but that will have to wait.
+[![donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=76N3LUCQ9FENS&currency_code=BRL&source=url)
