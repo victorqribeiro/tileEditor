@@ -74,5 +74,6 @@ B - Paint bucket tool (paint a whole region on the map)
 
 ------
 
+## Help support the project
 
 [![donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=76N3LUCQ9FENS&currency_code=BRL&source=url)
