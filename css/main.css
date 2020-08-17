@@ -120,9 +120,14 @@ html, body {
 	background-color: black;
 }
 
+.tileBorderDelete{
+	background-color: red;
+}
+
+
 .square {
 	display: block;
-	background-color: red;
+	background-color: gray;
 }
 
 #eraser {

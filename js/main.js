@@ -1,15 +1,17 @@
 let brush = null,
-		canvas,
-		c,
-		brushDiv = null,
-		tileImage, 
-		tileImagePath, 
-		mousedown = false, 
-		map = null, 
-		customTiles = {},
-		randomTiles = {},
-		lastpos,
-		loadedTextures = {}
+	canvas,
+	c,
+	brushDiv = null,
+	tileImage, 
+	tileImagePath, 
+	mousedown = false, 
+	map = null, 
+	customTiles = {},
+	customTileId = 0,
+	randomTiles = {},
+	randomTileId = 0,
+	lastpos,
+	loadedTextures = {}
 
 const $ = _ => document.querySelector(_)
 
@@ -168,13 +170,14 @@ const createTexturePalette = (imgSrc, imgName, tilesize, border) => {
 }
 
 const createNewCustomBrush = (tileSize, htile, vtile) => {
-	const customTileId = Object.keys(customTiles).length + 1
+	++customTileId
 	const tile = $c('div')
 	tile.id = customTileId
 	tile.className = 'tile'
 	tile.style.width = tileSize * htile + 'px'
 	tile.style.height = tileSize * vtile + 10 + 'px'
 	const border = $c('div')
+	border.title = `Select tile: custom tile ${randomTileId}`
 	border.style.width = tileSize * htile + 'px'
 	border.style.height = '10px'
 	border.className = 'tileBorder'
@@ -202,18 +205,31 @@ const createNewCustomBrush = (tileSize, htile, vtile) => {
 			tile.appendChild( square )
 		}
 	}
+    const borderDel = $c('div')
+    borderDel.title = `Deleted tile: custom tile ${randomTileId}`
+	borderDel.style.width = tileSize * htile + 'px'
+	borderDel.style.height = '10px'
+	borderDel.className = 'tileBorderDelete'
+	borderDel.onclick = () => {
+	    tile.remove()
+	    brush = null
+		delete customTiles[customTileId]
+		$('#statusbar').innerHTML = `Deleted tile: custom tile ${customTileId}`
+	}
+	tile.appendChild( borderDel )
 	$('#toolbar').appendChild( tile )
 	customTiles[customTileId] = Array(vtile).fill().map( _ => Array(htile).fill(0) )
 }
 
 const createNewRandomBrush = (tileSize, htile) => {
-	const randomTileId = Object.keys(randomTiles).length + 1
+	++randomTileId
 	const tile = $c('div')
 	tile.id = randomTileId
 	tile.className = 'tile'
 	tile.style.width = tileSize * htile + 'px'
 	tile.style.height = tileSize + 10 + 'px'
 	const border = $c('div')
+	border.title = `Select tile: random tile ${randomTileId}`
 	border.style.width = tileSize * htile + 'px'
 	border.style.height = '10px'
 	border.className = 'tileBorder'
@@ -239,6 +255,18 @@ const createNewRandomBrush = (tileSize, htile) => {
 		}
 		tile.appendChild( square )
 	}
+    const borderDel = $c('div')
+    borderDel.title = `Deleted tile: random tile ${randomTileId}`
+	borderDel.style.width = tileSize * htile + 'px'
+	borderDel.style.height = '10px'
+	borderDel.className = 'tileBorderDelete'
+	borderDel.onclick = () => {
+	    tile.remove()
+	    brush = null
+		delete randomTiles[randomTileId]
+		$('#statusbar').innerHTML = `Deleted tile: random tile ${randomTileId}`
+	}
+	tile.appendChild( borderDel )
 	$('#toolbar').appendChild( tile )
 	randomTiles[randomTileId] = Array(htile).fill(0)
 }
