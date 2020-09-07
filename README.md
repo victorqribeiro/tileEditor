@@ -2,7 +2,7 @@
 
 A 2D tile editor that runs on the browser.
 
-![screenshot](https://img.youtube.com/vi/L2loTeaPBJY/maxresdefault.jpg)
+![screenshot](screenshot.png)
 
 Live version [here](https://victorribeiro.com/tileEditor/)  
 Alternative link [here](https://victorqribeiro.github.io/tileEditor/)
