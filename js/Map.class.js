@@ -195,13 +195,13 @@ class Map {
 	addLayer(){
 		this.layers.push(Array(this.intH).fill().map( _ => Array(this.intW).fill(0)))
 		this.nLayers = this.layers.length
-		this.activeLayer = 0
+		this.activeLayer = this.nLayers-1
 	}
 	
 	removeLayer(){
 		this.layers.pop()
 		this.nLayers = this.layers.length
-		this.activeLayer = 0
+		this.activeLayer = this.nLayers-1
 	}
 
 }

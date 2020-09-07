@@ -57,6 +57,7 @@ const createCanvasMap = (width, height, tileSize, border, tileSizeDraw, nLayers)
 		map.removeLayer()
 		$('#layerSelector').innerHTML = createLayerSelector().innerHTML
 		$('#statusbar').innerHTML = "Removed layer"
+		map.show(c)
 	}
 	const addLayer = $c('button')
 	addLayer.innerText = "+"
