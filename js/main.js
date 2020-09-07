@@ -56,6 +56,7 @@ const createCanvasMap = (width, height, tileSize, border, tileSizeDraw, nLayers)
 	subLayer.onclick = () => {
 		map.removeLayer()
 		$('#layerSelector').innerHTML = createLayerSelector().innerHTML
+		$('#layerSelector').value = map.activeLayer
 		$('#statusbar').innerHTML = "Removed layer"
 		map.show(c)
 	}
@@ -64,6 +65,7 @@ const createCanvasMap = (width, height, tileSize, border, tileSizeDraw, nLayers)
 	addLayer.onclick = () => {
 		map.addLayer()
 		$('#layerSelector').innerHTML = createLayerSelector().innerHTML
+		$('#layerSelector').value = map.activeLayer
 		$('#statusbar').innerHTML = "Added new layer"
 	}
 	layerSelector = createLayerSelector(nLayers)
