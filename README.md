@@ -15,6 +15,8 @@ I made this tool for personal use, but now I'm releasing it under MIT license. Y
 
 [YouTube playlist](https://www.youtube.com/playlist?list=PL3pnEx5_eGm88UxHH2OlzRRdnj7zT6Cla)
 
+Just want to play with it? [Lots of free textures you can use](https://opengameart.org/art-search-advanced?keys=tile+map&title=&field_art_tags_tid_op=or&field_art_tags_tid=&name=&field_art_type_tid%5B%5D=9&sort_by=count&sort_order=DESC&items_per_page=24&Collection=)
+
 # Menus
 
 ## MAP
