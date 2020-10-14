@@ -11,13 +11,28 @@ let brush = null,
 	randomTiles = {},
 	randomTileId = 0,
 	lastpos,
-	loadedTextures = {}
+	loadedTextures = {},
+	t
 
 const $ = _ => document.querySelector(_)
 
 const $c = _ => document.createElement(_)
 
-const getPos = e => { return {x: Math.floor(e.offsetX / map.tileSizeDraw), y: Math.floor(e.offsetY / map.tileSizeDraw)} }
+const getPos = e => {
+    if(map.isometric){
+        const _y = e.offsetY / map.gridHeight
+        const _x = e.offsetX / map.gridWidth - map.intW / 2
+        return {
+            x: Math.floor(_y-_x),
+            y: Math.floor(_x+_y)
+        }
+    }else{
+        return {
+            x: Math.floor(e.offsetX / map.gridWidth),
+            y: Math.floor(e.offsetY / map.gridHeight)
+        }
+    }    
+}
 
 const exportPNG = name => {
   canvas.toBlob( blob => {
@@ -48,8 +63,8 @@ const createLayerSelector = (nLayers = null) => {
 	return select
 }
 
-const createCanvasMap = (width, height, tileSize, border, tileSizeDraw, nLayers) => {
-	map = new Map(width, height, tileSize, border, tileSizeDraw, nLayers)
+const createCanvasMap = (width, height, gridWidth, gridHeight, nLayers, isometric) => {
+	map = new Map(width, height, gridWidth, gridHeight, nLayers, isometric)
 	const canvasToolbar = $c('div')
 	const subLayer = $c('button')
 	subLayer.innerText = "-"
@@ -73,11 +88,13 @@ const createCanvasMap = (width, height, tileSize, border, tileSizeDraw, nLayers)
 	canvasToolbar.appendChild(layerSelector)
 	canvasToolbar.appendChild(addLayer)
 	canvas = $c('canvas')
-	canvas.width = width * tileSizeDraw
-	canvas.height = height * tileSizeDraw
+	canvas.width = width * gridWidth
+	canvas.height = height * gridHeight
 	c = canvas.getContext('2d')
 	c.imageSmoothingEnabled = false
 	canvas.addEventListener('mousedown', e => {
+	    if(!brush)
+	        return
 		lastpos = [null,null]
 		mousedown = true
 		const pos = getPos(e)
@@ -113,50 +130,58 @@ const createCanvasMap = (width, height, tileSize, border, tileSizeDraw, nLayers)
 	$('#statusbar').innerHTML = `New map created`
 }
 
-const createTexturePalette = (imgSrc, imgName, tilesize, border) => {
+const createTexturePalette = (imgSrc, imgName, tileRealWidth, tileRealHeight, border, tileWidth, tileHeight, bottomOffset) => {
 	imgName = imgName.replace(/.*\\/,'')
-	loadedTextures[imgName] = true
-	const url = window.URL || window.webkitURL
-	tileImagePath = url.createObjectURL(imgSrc)
-	tileImage = new Image()
-	tileImage.src = tileImagePath
-	tileImage.onerror = () => {
-		$('#statusbar').innerHTML = `Error loading texture file ${imgName}`
+    t = new Texture(imgSrc, imgName, tileRealWidth, tileRealHeight, border, tileWidth, tileHeight, bottomOffset)
+	loadedTextures[t.name] = true
+
+	const eraser = $c('div')
+	eraser.id = 'eraser'
+	eraser.className = 'tool'
+	eraser.innerText = '\uf12d'
+	eraser.onclick = () => {
+		if(brush.type == 'custom')
+			brush.type = 'default'
+		brush.data = 0
 	}
-	tileImage.onload = () => {
+	const bucket = $c('div')
+	bucket.id = 'bucket'
+	bucket.className = 'tool'
+	bucket.innerText = '\uf576'
+	bucket.onclick = () => {
+		if(brush.type == 'custom')
+			brush.type = 'default'
+		brush.type = 'bucket'
+	}
+	const drop = $c('div')
+	drop.id = 'bucket'
+	drop.className = 'tool'
+	drop.innerText = '\uf1fb'
+	drop.onclick = () => {
+
+	}
+	const tools = $c('div')
+	tools.id = 'tools'
+	tools.appendChild(eraser)
+	tools.appendChild(bucket)
+	tools.appendChild(drop)
+	$('#toolbar').appendChild(tools)
+
+    t.load(() => {
 		$('#statusbar').innerHTML = `Texture file ${imgName} loaded`
-		const eraser = $c('div')
-		eraser.id = 'eraser'
-		eraser.innerText = 'E'
-		eraser.onclick = () => {
-			if(brush.type == 'custom')
-				brush.type = 'default'
-			brush.data = 0
-		}
-		const bucket = $c('div')
-		bucket.id = 'bucket'
-		bucket.innerText = 'B'
-		bucket.onclick = () => {
-			if(brush.type == 'custom')
-				brush.type = 'default'
-			brush.type = 'bucket'
-		}
-		$('#toolbar').appendChild( eraser )
-		$('#toolbar').appendChild( bucket )
-		const finalsize = tilesize+border
-		const htile = Math.floor(tileImage.width / finalsize)
-		const vtile = Math.floor(tileImage.height / finalsize)
+		const htile = Math.floor(t.image.width / (t.tileRealWidth+t.border))
+		const vtile = Math.floor(t.image.height / (t.tileRealHeight+t.border))
 		const tileIcons = $c('div')
 		tileIcons.id = 'tileIcons'
-		tileIcons.style.width = htile * tilesize + 'px'
+		tileIcons.style.width = `${htile * t.tileRealWidth}px`
 		for(let i = 0; i < vtile; i++){
 			for(let j = 0; j < htile; j++){
 				const tileIcon = $c('div')
 				tileIcon.id = i + j * htile
 				tileIcon.className = 'tileIcon'
-				tileIcon.style.width = tilesize + 'px'
-				tileIcon.style.height = tilesize + 'px'
-				tileIcon.style.background = `url('${tileImagePath}') -${j*(tilesize+border)}px -${i*(tilesize+border)}px`
+				tileIcon.style.width = tileRealWidth + 'px'
+				tileIcon.style.height = tileRealHeight + 'px'
+				tileIcon.style.background = `url('${t.src}') -${j*(t.tileRealWidth+t.border)}px -${i*(t.tileRealHeight+t.border)}px`
 				tileIcon.onclick = () => { 
 					brush = {
 						'type': 'default',
@@ -169,109 +194,110 @@ const createTexturePalette = (imgSrc, imgName, tilesize, border) => {
 			}
 		}
 		$('#toolbar').appendChild( tileIcons )
-	}
+	})
 }
 
-const createNewCustomBrush = (tileSize, htile, vtile) => {
+const createNewCustomBrush = (tileWidth, tileHeight, htile, vtile) => {
 	++customTileId
 	const tile = $c('div')
 	tile.id = customTileId
 	tile.className = 'tile'
-	tile.style.width = tileSize * htile + 'px'
-	tile.style.height = tileSize * vtile + 10 + 'px'
+	tile.style.width = tileWidth * htile + 'px'
+	tile.style.height = tileHeight * vtile + 10 + 'px'
 	const border = $c('div')
-	border.title = `Select tile: custom tile ${randomTileId}`
-	border.style.width = tileSize * htile + 'px'
+	border.title = `Select tile: custom tile ${tile.id}`
+	border.style.width = tileWidth * htile + 'px'
 	border.style.height = '10px'
 	border.className = 'tileBorder'
 	border.onclick = () => {
+	    console.log( tile.id )
 		brush = {
 			'type': 'custom',
-			'data': customTiles[customTileId]
+			'data': customTiles[tile.id]
 		}
-		$('#statusbar').innerHTML = `selected tile: custom tile ${customTileId}`
+		$('#statusbar').innerHTML = `selected tile: custom tile ${tile.id}`
 	}
 	tile.appendChild( border )
 	for(let i = 0; i < vtile; i++){
 		for(let j = 0; j < htile; j++){
 			const square = $c('div')
 			square.className = 'square'
-			square.style.width = tileSize + 'px'
-			square.style.height = tileSize + 'px'
+			square.style.width = tileWidth + 'px'
+			square.style.height = tileHeight + 'px'
 			square.onclick = () => {
 				if( !brushDiv || brush.type != 'default' )
 					return
 				square.style.background = brushDiv.style.background
-				customTiles[customTileId][i][j] = brush.data
+				customTiles[tile.id][i][j] = brush.data
 				brushDiv = null
 			}
 			tile.appendChild( square )
 		}
 	}
     const borderDel = $c('div')
-    borderDel.title = `Deleted tile: custom tile ${randomTileId}`
-	borderDel.style.width = tileSize * htile + 'px'
+    borderDel.title = `Deleted tile: custom tile ${tile.id}`
+	borderDel.style.width = tileWidth * htile + 'px'
 	borderDel.style.height = '10px'
 	borderDel.className = 'tileBorderDelete'
 	borderDel.onclick = () => {
 	    tile.remove()
-	    brush = null
-		delete customTiles[customTileId]
-		$('#statusbar').innerHTML = `Deleted tile: custom tile ${customTileId}`
+		brush = null
+		delete customTiles[tile.id]
+		$('#statusbar').innerHTML = `Deleted tile: custom tile ${tile.id}`
 	}
 	tile.appendChild( borderDel )
 	$('#toolbar').appendChild( tile )
-	customTiles[customTileId] = Array(vtile).fill().map( _ => Array(htile).fill(0) )
+	customTiles[tile.id] = Array(vtile).fill().map( _ => Array(htile).fill(0) )
 }
 
-const createNewRandomBrush = (tileSize, htile) => {
+const createNewRandomBrush = (tileWidth, tileHeight, htile) => {
 	++randomTileId
 	const tile = $c('div')
 	tile.id = randomTileId
 	tile.className = 'tile'
-	tile.style.width = tileSize * htile + 'px'
-	tile.style.height = tileSize + 10 + 'px'
+	tile.style.width = tileWidth * htile + 'px'
+	tile.style.height = tileHeight + 10 + 'px'
 	const border = $c('div')
-	border.title = `Select tile: random tile ${randomTileId}`
-	border.style.width = tileSize * htile + 'px'
+	border.title = `Select tile: random tile ${tile.id}`
+	border.style.width = tileWidth * htile + 'px'
 	border.style.height = '10px'
 	border.className = 'tileBorder'
 	border.onclick = () => {
 		brush = {
 			'type': 'random',
-			'data': randomTiles[randomTileId]
+			'data': randomTiles[tile.id]
 		}
-		$('#statusbar').innerHTML = `selected tile: random tile ${randomTileId}`
+		$('#statusbar').innerHTML = `selected tile: random tile ${tile.id}`
 	}
 	tile.appendChild( border )
 	for(let j = 0; j < htile; j++){
 		const square = $c('div')
 		square.className = 'square'
-		square.style.width = tileSize + 'px'
-		square.style.height = tileSize + 'px'
+		square.style.width = tileWidth + 'px'
+		square.style.height = tileHeight + 'px'
 		square.onclick = () => {
 			if( !brushDiv || brush.type != 'default' )
 				return
 			square.style.background = brushDiv.style.background
-			randomTiles[randomTileId][j] = brush.data
+			randomTiles[tile.id][j] = brush.data
 			brushDiv = null
 		}
 		tile.appendChild( square )
 	}
     const borderDel = $c('div')
-    borderDel.title = `Deleted tile: random tile ${randomTileId}`
-	borderDel.style.width = tileSize * htile + 'px'
+    borderDel.title = `Deleted tile: random tile ${tile.id}`
+	borderDel.style.width = tileWidth * htile + 'px'
 	borderDel.style.height = '10px'
 	borderDel.className = 'tileBorderDelete'
 	borderDel.onclick = () => {
 	    tile.remove()
-	    brush = null
-		delete randomTiles[randomTileId]
-		$('#statusbar').innerHTML = `Deleted tile: random tile ${randomTileId}`
+        brush = null
+		delete randomTiles[tile.id]
+		$('#statusbar').innerHTML = `Deleted tile: random tile ${tile.id}`
 	}
 	tile.appendChild( borderDel )
 	$('#toolbar').appendChild( tile )
-	randomTiles[randomTileId] = Array(htile).fill(0)
+	randomTiles[tile.id] = Array(htile).fill(0)
 }
 
 const save = (name) => {

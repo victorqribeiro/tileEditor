@@ -28,6 +28,8 @@ const Menu  = {
 		ok.onclick = _ => {
 			const args = []
 			for(const key in conf){
+			    if(conf[key] == 'checkbox')
+			        $(`#${key}`).value = $(`#${key}`).checked ? 1 : 0
 				if(conf[key] == 'file')
 					args.push( $(`#${key}`).files[0] )
 				args.push( $(`#${key}`).value )
@@ -56,10 +58,10 @@ const Menu  = {
 				const conf = {
 					'width': 'number',
 					'height': 'number',
-					'tileSize': 'number',
-					'border': 'number',
-					'tileSizeDraw': 'number',
-					'nlayers': 'number'
+					'gridWidth': 'number',
+					'gridHeight': 'number',
+					'nlayers': 'number',
+					'isometric': 'checkbox'
 				}
 				return Menu.showWindow( conf, Menu.map.new )
 			}
@@ -132,8 +134,12 @@ const Menu  = {
 			if( !arguments ){
 				const conf = {
 					'image': 'file',
-					'tilesize': 'number',
-					'border': 'number'
+					'tileRealWidth': 'number',
+					'tileRealHeight': 'number',
+					'border': 'number',
+					'tileWidth': 'number',
+					'tileHeight': 'number',
+					'bottomOffset': 'number'
 				}
 				return Menu.showWindow( conf, Menu.texture.load )
 			}
@@ -147,7 +153,8 @@ const Menu  = {
 		'custom': (arguments = null) => {
 			if( !arguments ){
 				const conf = {
-					'tilesize': 'number',
+					'tileWidth': 'number',
+					'tileHeight': 'number',
 					'htile': 'number',
 					'vtile': 'number'
 				}
@@ -159,7 +166,8 @@ const Menu  = {
 		'random': (arguments = null) => {
 			if( !arguments ){
 				const conf = {
-					'tilesize': 'number',
+					'tileWidth': 'number',
+					'tileHeight': 'number',
 					'htile': 'number'
 				}
 				return Menu.showWindow( conf, Menu.brushes.random )

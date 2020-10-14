@@ -1,25 +1,87 @@
 class Map {
 
-	constructor(width = 0, height = 0, tileSize = 0, border = 0, tileSizeDraw = 0, nLayers = 1){
-		this.tileSize = tileSize
-		this.border = border
-		this.tileSizeDraw = tileSizeDraw
+	constructor(width = 0, height = 0, gridWidth = 0, gridHeight = 0, nLayers = 1, isometric = 0){
+		this.gridWidth = gridWidth
+		this.gridHeight = gridHeight
 		this.intW = width
 		this.intH = height
-		this.width = this.intW * this.tileSizeDraw
-		this.height = this.intH * this.tileSizeDraw
+		this.width = this.intW * this.gridWidth
+		this.height = this.intH * this.gridHeight
 		this.nLayers = nLayers
 		this.activeLayer = 0
+		this.isometric = isometric
 		this.grid = true
 		this.layers = Array(this.nLayers).fill().map( __ => Array(this.intH).fill().map( _ => Array(this.intW).fill(0)))
 		this.needCanvasUpdate = false
 	}
 
-	showGrid(c){
+    drawIsometricTile = (c, x, y, fillColor, strokeColor) => {
+	    c.save()
+	    c.translate((y-x) * this.gridWidth/2, (x+y) * this.gridHeight/2)
+	    c.beginPath()
+	    c.moveTo(0,0)
+	    c.lineTo(this.gridWidth/2, this.gridHeight/2)
+	    c.lineTo(0, this.gridHeight)
+	    c.lineTo(-this.gridWidth/2, this.gridHeight/2)
+	    c.closePath()
+	    c.fillStyle = fillColor
+	    c.fill()
+	    c.strokeStyle = strokeColor
+	    c.stroke()
+	    c.restore()
+    }
+
+    showIsometricGrid(c){
+        c.save()
+        c.translate(this.width/2, 0)
 		for(let i = 0; i < this.intH; i++)
 			for(let j = 0; j < this.intW; j++)
-				c.strokeRect(j * this.tileSizeDraw, i * this.tileSizeDraw, this.tileSizeDraw, this.tileSizeDraw)	
+			    this.drawIsometricTile(c, i, j, 'rgba(0,0,0,0)', 'black')
+        c.restore()
+    }
+
+    showSquareGrid(c){
+		for(let i = 0; i < this.intH; i++)
+			for(let j = 0; j < this.intW; j++)
+				c.strokeRect(j * this.gridWidth, i * this.gridHeight, this.gridWidth, this.gridHeight)
+    }
+
+	showGrid(c){
+	    if(this.isometric)
+	        this.showIsometricGrid(c)
+	    else
+	        this.showSquareGrid(c)
 	}
+
+    showSquaredTile(c, x, y, i, j){
+	    c.drawImage(
+		    t.image, 
+		    x * t.tileRealWidth, 
+		    y * t.tileRealHeight, 
+		    t.tileRealWidth, 
+		    t.tileRealHeight,
+		    j * this.gridWidth, 
+		    i * this.gridHeight, 
+		    this.gridWidth,
+		    this.gridHeight
+	    )
+    }
+    
+    showIsometricTile(c, x, y, i, j){
+	    c.save()
+	    c.translate((i-j) * t.tileWidth/2, (i+j) * t.tileHeight/2)
+	    
+	    c.drawImage(
+	        t.image,
+		    x * (t.tileRealWidth + t.border), 
+		    y * (t.tileRealHeight + t.border), 
+		    t.tileRealWidth, t.tileRealHeight,
+	        -t.tileWidth/2, -t.tileRealHeight+t.tileHeight+t.bottomOffset,
+	        t.tileRealWidth, t.tileRealHeight
+	    )
+	    
+	    c.restore()
+    }
 
 	show(c){
 		if(this.needCanvasUpdate){
@@ -31,44 +93,66 @@ class Map {
 		c.clearRect(0, 0, this.width, this.height)
 		if(this.grid)
 			this.showGrid(c)
-		for(let l = 0; l < this.nLayers; l++)
-			for(let i = 0; i < this.intH; i++)
-				for(let j = 0; j < this.intW; j++)
-					if( this.layers[l][i][j] ){
-						const x = this.layers[l][i][j][1],
-									y = this.layers[l][i][j][0]
-						c.drawImage(
-							tileImage, 
-							x * (this.tileSize + this.border), 
-							y * (this.tileSize + this.border), 
-							this.tileSize, this.tileSize,
-							j * this.tileSizeDraw, 
-							i * this.tileSizeDraw, 
-							this.tileSizeDraw, this.tileSizeDraw
-						)
-					}
+        if(this.isometric){
+            c.save()
+            c.translate(this.width/2, 0)
+        }
+		for(let l = 0; l < this.nLayers; l++){
+			for(let i = 0; i < this.intH; i++){
+				for(let j = 0; j < this.intW; j++){
+					if( !this.layers[l][i][j] )
+					    continue
+					const x = this.layers[l][i][j][1],
+					      y = this.layers[l][i][j][0]
+                    if(this.isometric)
+                        this.showIsometricTile(c, x, y, i, j)
+                    else
+                        this.showSquaredTile(c, x, y, i, j)
+                }
+            }
+        }
+        if(this.isometric)  
+            c.restore()
 	}
 	
 	load(data){
 		this.width = data.width
 		this.height = data.height
-		this.tileSize = data.tileSize
-		this.tileSizeDraw = data.tileSizeDraw
+		this.gridWidth = data.gridWidth
+		this.gridHeight = data.gridHeight
 		this.intW = data.intW
 		this.intH = data.intH
 		this.nLayers = data.nLayers
 		this.layers = data.layers
+		this.isometric = data.isometric
 		this.textures = data.textures
 		this.needCanvasUpdate = true
 	}
 	
 	paintCustom(brush,nlayer,posy,posx){
+	    if(this.isometric){
+	        this.paintCustomIsometric(brush,nlayer,posy,posx)
+	    }else{
+	        this.paintCustomSquare(brush,nlayer,posy,posx)
+	    }
+	}
+	
+	paintCustomSquare(brush,nlayer,posy,posx){
 		for(let i = 0; i < brush.data.length; i++){
 			for(let j = 0; j < brush.data[0].length; j++){
 				if( posy+i < this.intH && posx+j < this.intW )
 					this.layers[nlayer][posy+i][posx+j] = brush.data[i][j]
 			}
-		}		
+		}	
+	}
+	
+	paintCustomIsometric(brush,nlayer,posy,posx){
+		for(let i = 0; i < brush.data.length; i++){
+			for(let j = 0; j < brush.data[0].length; j++){
+				if( posy+i+j < this.intH && posx+i-j < this.intW )
+					this.layers[nlayer][posy+i+j][posx+i-j] = brush.data[i][j]
+			}
+		}
 	}
 	
 	paintRandom(brush,nlayer,posy,posx){
@@ -163,8 +247,8 @@ class Map {
 		}
 		this.intH = this.layers[0].length
 		this.intW = this.layers[0][0].length
-		this.height = this.tileSizeDraw * this.intH
-		this.width = this.tileSizeDraw * this.intW
+		this.height = this.gridHeight * this.intH
+		this.width = this.gridWidth * this.intW
 		this.needCanvasUpdate = true 
 	}
 
@@ -187,8 +271,8 @@ class Map {
 		}
 		this.intH = this.layers[0].length
 		this.intW = this.layers[0][0].length
-		this.height = this.tileSizeDraw * this.intH
-		this.width = this.tileSizeDraw * this.intW
+		this.height = this.gridHeight * this.intH
+		this.width = this.gridWidth * this.intW
 		this.needCanvasUpdate = true 
 	}
 	
