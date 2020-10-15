@@ -225,6 +225,9 @@ class Map {
 			case 'bucket' :
 					this.paintBucket(brush,nlayer,posy,posx)
 				break
+	        case 'drop' :
+	                changeBrush(this.layers[nlayer][posy][posx])
+	            break
 		}
 	}
 	

@@ -146,7 +146,7 @@ canvas {
 
 .tileIcon {
 	display: block;
-	border: solid 1px black;
+	border: dashed 1px #CCC;
 	box-sizing: border-box;
 }
 
@@ -168,4 +168,8 @@ canvas {
 .square {
 	display: block;
 	background-color: gray;
+}
+
+.selected {
+    border: solid 1px black;
 }

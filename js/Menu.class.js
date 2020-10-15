@@ -38,7 +38,8 @@ const Menu  = {
 			bg.remove()
 		}
 		div.addEventListener('keypress', e => {
-			if(e.keyCode == 13)
+		    const path = e.path || (e.composedPath && e.composedPath())
+			if(e.keyCode == 13 && path[0].innerText !== "Ok")
 				ok.click()
 		})
 		const cancel = $c('button')
