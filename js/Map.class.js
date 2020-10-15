@@ -73,7 +73,7 @@ class Map {
 	    
 	    c.drawImage(
 	        t.image,
-		    x * (t.tileRealWidth + t.border), 
+		    x * (t.tileRealWidth + t.border),
 		    y * (t.tileRealHeight + t.border), 
 		    t.tileRealWidth, t.tileRealHeight,
 	        -t.tileWidth/2, -t.tileRealHeight+t.tileHeight+t.bottomOffset,
@@ -147,10 +147,13 @@ class Map {
 	}
 	
 	paintCustomIsometric(brush,nlayer,posy,posx){
+	    const scaleV = Math.floor(t.tileRealHeight/t.tileHeight)
 		for(let i = 0; i < brush.data.length; i++){
 			for(let j = 0; j < brush.data[0].length; j++){
-				if( posy+i+j < this.intH && posx+i-j < this.intW )
-					this.layers[nlayer][posy+i+j][posx+i-j] = brush.data[i][j]
+                const posY = posy + (i * scaleV) + j
+                const posX = posx + (i * scaleV) - j
+				if( posY < this.intH && posX < this.intW )
+					this.layers[nlayer][posY][posX] = brush.data[i][j]
 			}
 		}
 	}

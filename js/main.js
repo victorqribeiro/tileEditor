@@ -157,6 +157,10 @@ const createTexturePalette = (imgSrc, imgName, tileRealWidth, tileRealHeight, bo
 	eraser.className = 'tool'
 	eraser.innerText = '\uf12d'
 	eraser.onclick = () => {
+	    if(!brush)
+	        brush = {
+	            'type': 'default'
+	        }
 		if(brush.type == 'custom')
 			brush.type = 'default'
 		brush.data = 0
@@ -171,6 +175,8 @@ const createTexturePalette = (imgSrc, imgName, tileRealWidth, tileRealHeight, bo
 	bucket.className = 'tool'
 	bucket.innerText = '\uf576'
 	bucket.onclick = () => {
+	    if(!brush)
+	        return
 		if(brush.type == 'custom')
 			brush.type = 'default'
 		brush.type = 'bucket'
