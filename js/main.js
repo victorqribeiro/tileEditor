@@ -154,6 +154,7 @@ const createTexturePalette = (imgSrc, imgName, tileRealWidth, tileRealHeight, bo
 
 	const eraser = $c('div')
 	eraser.id = 'eraser'
+	eraser.title = 'Eraser'
 	eraser.className = 'tool'
 	eraser.innerText = '\uf12d'
 	eraser.onclick = () => {
@@ -172,6 +173,7 @@ const createTexturePalette = (imgSrc, imgName, tileRealWidth, tileRealHeight, bo
 	}
 	const bucket = $c('div')
 	bucket.id = 'bucket'
+	bucket.title = 'Paint Bucket'
 	bucket.className = 'tool'
 	bucket.innerText = '\uf576'
 	bucket.onclick = () => {
@@ -188,6 +190,7 @@ const createTexturePalette = (imgSrc, imgName, tileRealWidth, tileRealHeight, bo
 	}
 	const drop = $c('div')
 	drop.id = 'drop'
+	drop.title = 'Eye Dropper'
 	drop.className = 'tool'
 	drop.innerText = '\uf1fb'
 	drop.onclick = () => {
@@ -196,7 +199,7 @@ const createTexturePalette = (imgSrc, imgName, tileRealWidth, tileRealHeight, bo
 		    brushDiv.classList.remove('selected')
 		    brushDiv = null
 		}
-        $('#statusbar').innerHTML = "Eye Drop selected"
+        $('#statusbar').innerHTML = "Eye Dropper selected"
 	}
 	const tools = $c('div')
 	tools.id = 'tools'
