@@ -23,10 +23,10 @@ const $c = _ => document.createElement(_)
 const getPos = e => {
     if(map.isometric){
         const _y = e.offsetY / map.gridHeight
-        const _x = e.offsetX / map.gridWidth - map.intW / 2
+        const _x = e.offsetX / map.gridWidth - map.intH / 2
         return {
-            x: Math.floor(_y-_x),
-            y: Math.floor(_x+_y)
+            y: Math.floor(_y-_x),
+            x: Math.floor(_x+_y)
         }
     }else{
         return {
@@ -83,6 +83,7 @@ const createLayerSelector = (nLayers = null) => {
 const createCanvasMap = (width, height, gridWidth, gridHeight, nLayers, isometric) => {
 	map = new Map(width, height, gridWidth, gridHeight, nLayers, isometric)
 	const canvasToolbar = $c('div')
+	canvasToolbar.id = "canvas-toolbar"
 	const subLayer = $c('button')
 	subLayer.innerText = "-"
 	subLayer.onclick = () => {
@@ -104,9 +105,22 @@ const createCanvasMap = (width, height, gridWidth, gridHeight, nLayers, isometri
 	canvasToolbar.appendChild(subLayer)
 	canvasToolbar.appendChild(layerSelector)
 	canvasToolbar.appendChild(addLayer)
+	
+	const gridLabel = $c('label')
+	gridLabel.innerText = "Grid: "
+	const gridCheck = $c('input')
+	gridCheck.type = "checkbox"
+	gridCheck.checked = true
+	gridCheck.onclick = () => {
+	    map.grid = gridCheck.checked
+	    map.show(c)
+	}
+	gridLabel.appendChild(gridCheck)
+	canvasToolbar.appendChild(gridLabel)
+	
 	canvas = $c('canvas')
-	canvas.width = width * gridWidth
-	canvas.height = height * gridHeight
+	canvas.width = map.width
+	canvas.height = map.height
 	c = canvas.getContext('2d')
 	c.imageSmoothingEnabled = false
 	canvas.addEventListener('mousedown', e => {
@@ -115,6 +129,7 @@ const createCanvasMap = (width, height, gridWidth, gridHeight, nLayers, isometri
 		lastpos = [null,null]
 		mousedown = true
 		const pos = getPos(e)
+		console.log(pos.y, pos.x)
 		map.addTile( brush, map.activeLayer, pos.y, pos.x )
 		lastpos[0] = pos.y
 		lastpos[1] = pos.x

@@ -5,8 +5,14 @@ class Map {
 		this.gridHeight = gridHeight
 		this.intW = width
 		this.intH = height
-		this.width = this.intW * this.gridWidth
-		this.height = this.intH * this.gridHeight
+        if(isometric){
+		    this.width = this.intW * this.gridWidth + (this.intH-this.intW) * this.gridHeight
+		    this.height = this.width / 2
+        }else{
+            this.width = this.intW * this.gridWidth
+            this.height = this.intH * this.gridHeight
+        }
+
 		this.nLayers = nLayers
 		this.activeLayer = 0
 		this.isometric = isometric
@@ -33,7 +39,7 @@ class Map {
 
     showIsometricGrid(c){
         c.save()
-        c.translate(this.width/2, 0)
+        c.translate( this.intH * this.gridHeight, 0)
 		for(let i = 0; i < this.intH; i++)
 			for(let j = 0; j < this.intW; j++)
 			    this.drawIsometricTile(c, i, j, 'rgba(0,0,0,0)', 'black')
@@ -69,8 +75,7 @@ class Map {
     
     showIsometricTile(c, x, y, i, j){
 	    c.save()
-	    c.translate((i-j) * t.tileWidth/2, (i+j) * t.tileHeight/2)
-	    
+	    c.translate((j-i) * t.tileWidth/2, (i+j) * t.tileHeight/2)
 	    c.drawImage(
 	        t.image,
 		    x * (t.tileRealWidth + t.border),
@@ -79,7 +84,6 @@ class Map {
 	        -t.tileWidth/2, -t.tileRealHeight+t.tileHeight+t.bottomOffset,
 	        t.tileRealWidth, t.tileRealHeight
 	    )
-	    
 	    c.restore()
     }
 
@@ -95,7 +99,7 @@ class Map {
 			this.showGrid(c)
         if(this.isometric){
             c.save()
-            c.translate(this.width/2, 0)
+            c.translate(this.intH * this.gridHeight, 0)
         }
 		for(let l = 0; l < this.nLayers; l++){
 			for(let i = 0; i < this.intH; i++){
@@ -253,8 +257,9 @@ class Map {
 		}
 		this.intH = this.layers[0].length
 		this.intW = this.layers[0][0].length
-		this.height = this.gridHeight * this.intH
-		this.width = this.gridWidth * this.intW
+		const biggerSize = Math.max(this.intW, this.intH)
+		this.width = (this.isometric ? biggerSize : this.intW) * this.gridWidth
+		this.height = (this.isometric ? biggerSize : this.intH) * this.gridHeight + (this.gridHeight * 2)
 		this.needCanvasUpdate = true 
 	}
 
@@ -277,9 +282,10 @@ class Map {
 		}
 		this.intH = this.layers[0].length
 		this.intW = this.layers[0][0].length
-		this.height = this.gridHeight * this.intH
-		this.width = this.gridWidth * this.intW
-		this.needCanvasUpdate = true 
+		const biggerSize = Math.max(this.intW, this.intH)
+		this.width = (this.isometric ? biggerSize : this.intW) * this.gridWidth
+		this.height = (this.isometric ? biggerSize : this.intH) * this.gridHeight + (this.gridHeight * 2)
+		this.needCanvasUpdate = true
 	}
 	
 	addLayer(){

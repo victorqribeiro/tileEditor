@@ -74,6 +74,7 @@ canvas {
 	position: relative;
 	display: inline-block;
 	margin-left: 15px;
+	z-index: 2;
 }
 
 .title:hover{
@@ -177,4 +178,12 @@ canvas {
 
 .selected {
     border: solid 1px black;
+}
+
+#canvas-toolbar {
+    display: flex;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    left: 0;
 }
