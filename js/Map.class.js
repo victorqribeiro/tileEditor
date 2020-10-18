@@ -5,21 +5,24 @@ class Map {
 		this.gridHeight = gridHeight
 		this.intW = width
 		this.intH = height
-        if(isometric){
+		this.nLayers = nLayers
+		this.activeLayer = 0
+		this.isometric = isometric
+		this.grid = true
+		this.layers = Array(this.nLayers).fill().map( __ => Array(this.intH).fill().map( _ => Array(this.intW).fill(0)))
+		this.calculateMapSize()
+		this.needCanvasUpdate = false
+	}
+
+    calculateMapSize(){
+        if(this.isometric){
 		    this.width = this.intW * this.gridWidth + (this.intH-this.intW) * this.gridHeight
 		    this.height = this.width / 2
         }else{
             this.width = this.intW * this.gridWidth
             this.height = this.intH * this.gridHeight
         }
-
-		this.nLayers = nLayers
-		this.activeLayer = 0
-		this.isometric = isometric
-		this.grid = true
-		this.layers = Array(this.nLayers).fill().map( __ => Array(this.intH).fill().map( _ => Array(this.intW).fill(0)))
-		this.needCanvasUpdate = false
-	}
+    }
 
     drawIsometricTile = (c, x, y, fillColor, strokeColor) => {
 	    c.save()
@@ -257,9 +260,7 @@ class Map {
 		}
 		this.intH = this.layers[0].length
 		this.intW = this.layers[0][0].length
-		const biggerSize = Math.max(this.intW, this.intH)
-		this.width = (this.isometric ? biggerSize : this.intW) * this.gridWidth
-		this.height = (this.isometric ? biggerSize : this.intH) * this.gridHeight + (this.gridHeight * 2)
+        this.calculateMapSize()
 		this.needCanvasUpdate = true 
 	}
 
@@ -282,9 +283,7 @@ class Map {
 		}
 		this.intH = this.layers[0].length
 		this.intW = this.layers[0][0].length
-		const biggerSize = Math.max(this.intW, this.intH)
-		this.width = (this.isometric ? biggerSize : this.intW) * this.gridWidth
-		this.height = (this.isometric ? biggerSize : this.intH) * this.gridHeight + (this.gridHeight * 2)
+        this.calculateMapSize()
 		this.needCanvasUpdate = true
 	}
 	
