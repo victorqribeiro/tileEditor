@@ -16,8 +16,8 @@ class Map {
 
     calculateMapSize(){
         if(this.isometric){
-		    this.width = this.intW * this.gridWidth + (this.intH-this.intW) * this.gridHeight
-		    this.height = this.width / 2
+		    this.width = this.intW * this.gridWidth + (this.intH-this.intW) * this.gridWidth/2
+		    this.height = this.width / (this.gridWidth/this.gridHeight)
         }else{
             this.width = this.intW * this.gridWidth
             this.height = this.intH * this.gridHeight
@@ -42,7 +42,7 @@ class Map {
 
     showIsometricGrid(c){
         c.save()
-        c.translate( this.intH * this.gridHeight, 0)
+        c.translate( (this.intW * this.gridWidth)/2 + (this.intH-this.intW) * this.gridWidth/2, 0)
 		for(let i = 0; i < this.intH; i++)
 			for(let j = 0; j < this.intW; j++)
 			    this.drawIsometricTile(c, i, j, 'rgba(0,0,0,0)', 'black')
@@ -102,7 +102,7 @@ class Map {
 			this.showGrid(c)
         if(this.isometric){
             c.save()
-            c.translate(this.intH * this.gridHeight, 0)
+            c.translate((this.intW * this.gridWidth)/2 + (this.intH-this.intW) * this.gridWidth/2, 0)
         }
 		for(let l = 0; l < this.nLayers; l++){
 			for(let i = 0; i < this.intH; i++){
