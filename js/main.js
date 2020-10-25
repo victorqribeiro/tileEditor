@@ -14,7 +14,11 @@ let brush = null,
 	randomTileId = 0,
 	lastpos,
 	loadedTextures = {},
-	t
+	t,
+	lastPos,
+	deltaPos,
+	elementToScroll,
+	rButtonDown = false
 
 const $ = _ => document.querySelector(_)
 
@@ -124,7 +128,7 @@ const createCanvasMap = (width, height, gridWidth, gridHeight, nLayers, isometri
 	c = canvas.getContext('2d')
 	c.imageSmoothingEnabled = false
 	canvas.addEventListener('mousedown', e => {
-	    if(!brush)
+	    if(!brush || e.button != 0)
 	        return
 		lastpos = [null,null]
 		mousedown = true
@@ -136,6 +140,8 @@ const createCanvasMap = (width, height, gridWidth, gridHeight, nLayers, isometri
 		map.show(c)
 	})
 	canvas.addEventListener('mouseup', e => {
+	    if(e.button !== 0)
+	        return
 		mousedown = false
 		lastpos = [null,null]
 	})
@@ -406,4 +412,39 @@ $('body').addEventListener('click', e => {
 					Menu[root][opt]()
 			break
 	}
+})
+
+$('body').addEventListener('mousedown', e => {
+    if(e.button == 2){
+        e.preventDefault();
+        lastPos = {x: e.clientX, y: e.clientY}
+        rButtonDown = true
+    }
+})
+
+$('body').addEventListener('mouseup', e => {
+    if(e.button == 2){
+        e.preventDefault();
+        rButtonDown = false
+        elementToScroll = null
+    }
+})
+
+$('body').addEventListener('mousemove', e => {
+    if(rButtonDown){
+        deltaPos = {
+            x: lastPos.x - e.clientX, y: lastPos.y - e.clientY
+        }
+        lastPos = {x: e.clientX, y: e.clientY}
+        if(!elementToScroll){
+            let path = e.path || e.composedPath()
+            path = path.filter(el => ["canvasarea", "toolbar"].includes(el.id))
+            elementToScroll = path[0]
+        }
+        elementToScroll.scrollBy(deltaPos.x, deltaPos.y)
+    }
+})
+
+$('body').addEventListener('contextmenu', e => {
+    e.preventDefault();
 })
