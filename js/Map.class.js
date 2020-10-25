@@ -64,11 +64,11 @@ class Map {
 
     showSquaredTile(c, x, y, i, j){
 	    c.drawImage(
-		    t.image, 
-		    x * t.tileRealWidth, 
-		    y * t.tileRealHeight, 
-		    t.tileRealWidth, 
-		    t.tileRealHeight,
+		    texture.image, 
+		    x * texture.tileRealWidth, 
+		    y * texture.tileRealHeight, 
+		    texture.tileRealWidth, 
+		    texture.tileRealHeight,
 		    j * this.gridWidth, 
 		    i * this.gridHeight, 
 		    this.gridWidth,
@@ -78,14 +78,14 @@ class Map {
     
     showIsometricTile(c, x, y, i, j){
 	    c.save()
-	    c.translate((j-i) * t.tileWidth/2, (i+j) * t.tileHeight/2)
+	    c.translate((j-i) * texture.tileWidth/2, (i+j) * texture.tileHeight/2)
 	    c.drawImage(
-	        t.image,
-		    x * (t.tileRealWidth + t.border),
-		    y * (t.tileRealHeight + t.border), 
-		    t.tileRealWidth, t.tileRealHeight,
-	        -t.tileWidth/2, -t.tileRealHeight+t.tileHeight+t.bottomOffset,
-	        t.tileRealWidth, t.tileRealHeight
+	        texture.image,
+		    x * (texture.tileRealWidth + texture.border),
+		    y * (texture.tileRealHeight + texture.border), 
+		    texture.tileRealWidth, texture.tileRealHeight,
+	        -texture.tileWidth/2, -texture.tileRealHeight+texture.tileHeight+texture.bottomOffset,
+	        texture.tileRealWidth, texture.tileRealHeight
 	    )
 	    c.restore()
     }
@@ -154,7 +154,7 @@ class Map {
 	}
 	
 	paintCustomIsometric(brush,nlayer,posy,posx){
-	    const scaleV = Math.floor(t.tileRealHeight/t.tileHeight)
+	    const scaleV = Math.floor(texture.tileRealHeight/texture.tileHeight)
 		for(let i = 0; i < brush.data.length; i++){
 			for(let j = 0; j < brush.data[0].length; j++){
                 const posY = posy + (i * scaleV) + j

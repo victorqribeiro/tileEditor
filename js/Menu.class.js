@@ -16,7 +16,7 @@ const Menu  = {
 			if(key == "image")
 				input.accept = "image/*"
 			if(conf[key] == "number")
-				input.value = 0
+				input.placeholder = 0
 			row.appendChild( label )
 			row.appendChild( input )
 			div.appendChild( row )
@@ -50,6 +50,7 @@ const Menu  = {
 		div.appendChild(btns)
 		bg.appendChild(div)
 		$('body').appendChild(bg)
+		bg.querySelector('input').focus()
 	},
 
 	'map': {
@@ -66,7 +67,7 @@ const Menu  = {
 				}
 				return Menu.showWindow( conf, Menu.map.new )
 			}
-			createCanvasMap(...arguments.map(x => parseInt(x)))
+			createCanvasMap(...arguments.map(x => parseInt(x) || 0))
 		},
 	
 		'save': (arguments = null) => {
@@ -109,7 +110,7 @@ const Menu  = {
 				}
 				return Menu.showWindow( conf, Menu.map.expand )
 			}
-			map.expand(...arguments.map(x => parseInt(x)))
+			map.expand(...arguments.map(x => parseInt(x) || 0))
 			map.show(c)
 		},
 
@@ -123,7 +124,7 @@ const Menu  = {
 				}
 				return Menu.showWindow( conf, Menu.map.shrink )
 			}
-			map.shrink(...arguments.map(x => parseInt(x)))
+			map.shrink(...arguments.map(x => parseInt(x) || 0))
 			map.show(c)
 		}		
 
@@ -144,7 +145,7 @@ const Menu  = {
 				}
 				return Menu.showWindow( conf, Menu.texture.load )
 			}
-			createTexturePalette(arguments.shift(), arguments.shift(), ...arguments.map(x => parseInt(x)))
+			createTexturePalette(arguments.shift(), arguments.shift(), ...arguments.map(x => parseInt(x) || 0))
 		}
 		
 	},
@@ -161,7 +162,7 @@ const Menu  = {
 				}
 				return Menu.showWindow( conf, Menu.brushes.custom )
 			}
-			createNewCustomBrush(...arguments.map(x => parseInt(x)))
+			createNewCustomBrush(...arguments.map(x => parseInt(x) || 0))
 		},
 		
 		'random': (arguments = null) => {
@@ -173,7 +174,7 @@ const Menu  = {
 				}
 				return Menu.showWindow( conf, Menu.brushes.random )
 			}
-			createNewRandomBrush(...arguments.map(x => parseInt(x)))
+			createNewRandomBrush(...arguments.map(x => parseInt(x) || 0))
 		}
 	}
 	

@@ -5,8 +5,7 @@ let brush = null,
 	htile = null,
 	vtile = null,
 	tileImage, 
-	tileImagePath, 
-	mousedown = false, 
+	tileImagePath,  
 	map = null, 
 	customTiles = {},
 	customTileId = 0,
@@ -14,11 +13,7 @@ let brush = null,
 	randomTileId = 0,
 	lastpos,
 	loadedTextures = {},
-	t,
-	lastPos,
-	deltaPos,
-	elementToScroll,
-	rButtonDown = false
+	texture
 
 const $ = _ => document.querySelector(_)
 
@@ -131,9 +126,8 @@ const createCanvasMap = (width, height, gridWidth, gridHeight, nLayers, isometri
 	    if(!brush || e.button != 0)
 	        return
 		lastpos = [null,null]
-		mousedown = true
+		lButtonDown = true
 		const pos = getPos(e)
-		console.log(pos.y, pos.x)
 		map.addTile( brush, map.activeLayer, pos.y, pos.x )
 		lastpos[0] = pos.y
 		lastpos[1] = pos.x
@@ -142,15 +136,15 @@ const createCanvasMap = (width, height, gridWidth, gridHeight, nLayers, isometri
 	canvas.addEventListener('mouseup', e => {
 	    if(e.button !== 0)
 	        return
-		mousedown = false
+		lButtonDown = false
 		lastpos = [null,null]
 	})
 	canvas.addEventListener('mouseout', e => {
-		mousedown = false
+		lButtonDown = false
 		lastpos = [null,null]	
 	})
 	canvas.addEventListener('mousemove', e => {
-		if(!mousedown)	
+		if(!lButtonDown)	
 			return
 		const pos = getPos(e)
 		if( (pos.y == lastpos[0] && pos.x == lastpos[1]) ||
@@ -168,60 +162,74 @@ const createCanvasMap = (width, height, gridWidth, gridHeight, nLayers, isometri
 	$('#statusbar').innerHTML = `New map created`
 }
 
+const selectTool = tool => {
+    switch(tool){
+        case 'eraser' :
+	        if(!brush)
+	            brush = {
+	                'type': 'default'
+	            }
+		    if(brush.type == 'custom')
+			    brush.type = 'default'
+		    brush.data = 0
+		    if(brushDiv){
+		        brushDiv.classList.remove('selected')
+		        brushDiv = null
+		    }
+		    $('#statusbar').innerHTML = "Eraser selected"
+        break
+        case 'bucket' :
+	        if(!brush)
+	            return
+		    if(brush.type == 'custom')
+			    brush.type = 'default'
+		    brush.type = 'bucket'
+		    if(brushDiv){
+		        brushDiv.classList.remove('selected')
+		        brushDiv = null
+		    }
+		    $('#statusbar').innerHTML = "Paint Bucket selected"  
+        break
+        case 'drop' :
+            brush.type = 'drop'
+		    if(brushDiv){
+		        brushDiv.classList.remove('selected')
+		        brushDiv = null
+		    }
+            $('#statusbar').innerHTML = "Eye Dropper selected"
+        break
+        case 'pencil' :
+            if(!brush)
+                return
+            brush.type = 'default'
+            $('#statusbar').innerHTML = "Pencil selected"
+        break;
+    }
+}
+
 const createTexturePalette = (imgSrc, imgName, tileRealWidth, tileRealHeight, border, tileWidth, tileHeight, bottomOffset) => {
 	imgName = imgName.replace(/.*\\/,'')
-    t = new Texture(imgSrc, imgName, tileRealWidth, tileRealHeight, border, tileWidth, tileHeight, bottomOffset)
-	loadedTextures[t.name] = true
+    texture = new Texture(imgSrc, imgName, tileRealWidth, tileRealHeight, border, tileWidth, tileHeight, bottomOffset)
+	loadedTextures[texture.name] = true
 
 	const eraser = $c('div')
 	eraser.id = 'eraser'
 	eraser.title = 'Eraser'
 	eraser.className = 'tool'
 	eraser.innerText = '\uf12d'
-	eraser.onclick = () => {
-	    if(!brush)
-	        brush = {
-	            'type': 'default'
-	        }
-		if(brush.type == 'custom')
-			brush.type = 'default'
-		brush.data = 0
-		if(brushDiv){
-		    brushDiv.classList.remove('selected')
-		    brushDiv = null
-		}
-		$('#statusbar').innerHTML = "Eraser selected"
-	}
+	eraser.onclick = () => selectTool('eraser')
 	const bucket = $c('div')
 	bucket.id = 'bucket'
 	bucket.title = 'Paint Bucket'
 	bucket.className = 'tool'
 	bucket.innerText = '\uf576'
-	bucket.onclick = () => {
-	    if(!brush)
-	        return
-		if(brush.type == 'custom')
-			brush.type = 'default'
-		brush.type = 'bucket'
-		if(brushDiv){
-		    brushDiv.classList.remove('selected')
-		    brushDiv = null
-		}
-		$('#statusbar').innerHTML = "Paint Bucket selected"
-	}
+	bucket.onclick = () => selectTool('bucket')
 	const drop = $c('div')
 	drop.id = 'drop'
 	drop.title = 'Eye Dropper'
 	drop.className = 'tool'
 	drop.innerText = '\uf1fb'
-	drop.onclick = () => {
-        brush.type = 'drop'
-		if(brushDiv){
-		    brushDiv.classList.remove('selected')
-		    brushDiv = null
-		}
-        $('#statusbar').innerHTML = "Eye Dropper selected"
-	}
+	drop.onclick = () => selectTool('drop')
 	const tools = $c('div')
 	tools.id = 'tools'
 	tools.appendChild(eraser)
@@ -229,13 +237,13 @@ const createTexturePalette = (imgSrc, imgName, tileRealWidth, tileRealHeight, bo
 	tools.appendChild(drop)
 	$('#toolbar').appendChild(tools)
 
-    t.load(() => {
+    texture.load(() => {
 		$('#statusbar').innerHTML = `Texture file ${imgName} loaded`
-		htile = Math.floor(t.image.width / (t.tileRealWidth+t.border))
-		vtile = Math.floor(t.image.height / (t.tileRealHeight+t.border))
+		htile = Math.floor(texture.image.width / (texture.tileRealWidth+texture.border))
+		vtile = Math.floor(texture.image.height / (texture.tileRealHeight+texture.border))
 		const tileIcons = $c('div')
 		tileIcons.id = 'tileIcons'
-		tileIcons.style.width = `${htile * t.tileRealWidth}px`
+		tileIcons.style.width = `${htile * texture.tileRealWidth}px`
 		for(let i = 0; i < vtile; i++){
 			for(let j = 0; j < htile; j++){
 				const tileIcon = $c('div')
@@ -243,7 +251,8 @@ const createTexturePalette = (imgSrc, imgName, tileRealWidth, tileRealHeight, bo
 				tileIcon.className = 'tileIcon'
 				tileIcon.style.width = tileRealWidth + 'px'
 				tileIcon.style.height = tileRealHeight + 'px'
-				tileIcon.style.background = `url('${t.src}') -${j*(t.tileRealWidth+t.border)}px -${i*(t.tileRealHeight+t.border)}px`
+				tileIcon.style.background =
+				    `url('${texture.src}') -${j*(texture.tileRealWidth+texture.border)}px -${i*(texture.tileRealHeight+texture.border)}px`
 				tileIcon.onclick = () => changeBrush([i,j])
 				tileIcons.appendChild( tileIcon )
 			}
@@ -398,53 +407,3 @@ const load = async file => {
 	map.show(c)
 	$('#statusbar').innerHTML = `Map ${file.name} loaded with success!`
 }
-
-$('body').addEventListener('click', e => {
-	document.querySelectorAll('.menu_content').forEach( elm => elm.style.display = "none" )
-	switch(e.target.parentNode.className){
-		case 'menu' :
-				e.target.parentNode.querySelector(".menu_content").style.display = "block"
-			break
-		case 'menu_content' :
-				const root = e.target.parentNode.parentNode.innerText.toLowerCase()
-				const opt = e.target.innerText.toLowerCase()
-				if( root in Menu && opt in Menu[root] )
-					Menu[root][opt]()
-			break
-	}
-})
-
-$('body').addEventListener('mousedown', e => {
-    if(e.button == 2){
-        e.preventDefault();
-        lastPos = {x: e.clientX, y: e.clientY}
-        rButtonDown = true
-    }
-})
-
-$('body').addEventListener('mouseup', e => {
-    if(e.button == 2){
-        e.preventDefault();
-        rButtonDown = false
-        elementToScroll = null
-    }
-})
-
-$('body').addEventListener('mousemove', e => {
-    if(rButtonDown){
-        deltaPos = {
-            x: lastPos.x - e.clientX, y: lastPos.y - e.clientY
-        }
-        lastPos = {x: e.clientX, y: e.clientY}
-        if(!elementToScroll){
-            let path = e.path || e.composedPath()
-            path = path.filter(el => ["canvasarea", "toolbar"].includes(el.id))
-            elementToScroll = path[0]
-        }
-        elementToScroll.scrollBy(deltaPos.x, deltaPos.y)
-    }
-})
-
-$('body').addEventListener('contextmenu', e => {
-    e.preventDefault();
-})

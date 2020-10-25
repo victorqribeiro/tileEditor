@@ -77,7 +77,11 @@ canvas {
 	z-index: 2;
 }
 
-.title:hover{
+.title {
+    padding: 0.15em;
+}
+
+.title:hover {
 	color: #FFF;
 }
 
@@ -88,6 +92,11 @@ canvas {
 	list-style-type: none;
 	display: none;
 	background-color: #777;
+	min-width: 70px;
+}
+
+.menu_content > li {
+    padding: 0.2em;
 }
 
 .menu_content > li:hover {
