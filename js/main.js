@@ -208,10 +208,19 @@ const selectTool = tool => {
 }
 
 const createTexturePalette = (imgSrc, imgName, tileRealWidth, tileRealHeight, border, tileWidth, tileHeight, bottomOffset) => {
+    // reset everything
+    $('#toolbar').innerHTML = ''
+    brush = null
+	brushDiv = null
+	customTiles = {}
+	customTileId = 0
+	randomTiles = {}
+	randomTileId = 0
+	loadedTextures = {}
+
 	imgName = imgName.replace(/.*\\/,'')
     texture = new Texture(imgSrc, imgName, tileRealWidth, tileRealHeight, border, tileWidth, tileHeight, bottomOffset)
 	loadedTextures[texture.name] = true
-
 	const eraser = $c('div')
 	eraser.id = 'eraser'
 	eraser.title = 'Eraser'
@@ -406,4 +415,23 @@ const load = async file => {
 	map.load(data)
 	map.show(c)
 	$('#statusbar').innerHTML = `Map ${file.name} loaded with success!`
+}
+
+// code here only for example
+window.onload = () => {
+
+    const init = () => {
+        const url = new URL(document.location)
+	    example = url.searchParams.get('example')
+        if(example === '01'){
+            createTexturePalette(
+                'myCityTiles/myCityTiles-64x32.png',
+                'myCityTiles-64x32.png', 64, 96, 0, 64, 32, 0
+            )
+            createCanvasMap(20, 20, 64, 32, 1, 1)
+            $('#canvasarea').style.width = '60%'
+        }
+    }
+
+    init()
 }
