@@ -70,5 +70,8 @@ $('body').addEventListener('keydown', e => {
         case 80 : // P - pencil
             selectTool('pencil')
             break;
+        case 90 :
+            if(e.ctrlKey)
+                console.log('undo')
     }
 })

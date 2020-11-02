@@ -414,6 +414,7 @@ const load = async file => {
 	map = new Map()
 	map.load(data)
 	map.show(c)
+	$('#layerSelector').innerHTML = createLayerSelector(map.nLayers).innerHTML
 	$('#statusbar').innerHTML = `Map ${file.name} loaded with success!`
 }
 
