@@ -65,8 +65,8 @@ class Map {
     showSquaredTile(c, x, y, i, j){
 	    c.drawImage(
 		    texture.image, 
-		    x * texture.tileRealWidth, 
-		    y * texture.tileRealHeight, 
+		    x * (texture.tileRealWidth + texture.border), 
+		    y * (texture.tileRealHeight + texture.border), 
 		    texture.tileRealWidth, 
 		    texture.tileRealHeight,
 		    j * this.gridWidth, 
