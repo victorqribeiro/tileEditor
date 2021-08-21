@@ -246,22 +246,27 @@ class Map {
   }
 
   expand(top, bottom, left, right){
-    /* todo
-       add collision
-    */
     for(let l = 0; l < this.nLayers; l++){
       for(let i = 0; i < top; i++){
         this.layers[l].unshift( Array(this.intW).fill(0) )
+        if (this.collision && l == this.nLayers - 1)
+          this.collision.unshift( Array(this.intW).fill(0) )
       }
       for(let i = 0; i < bottom; i++){
         this.layers[l].push( Array(this.intW).fill(0) )
+        if (this.collision && l == this.nLayers - 1)
+          this.collision.push( Array(this.intW).fill(0) )
       }
       for(let i = 0; i < this.layers[l].length; i++){
         for(let j = 0; j < left; j++){
           this.layers[l][i].unshift(0)
+          if (this.collision && l == this.nLayers - 1)
+            this.collision[i].unshift( 0 )
         }
         for(let j = 0; j < right; j++){
           this.layers[l][i].push(0)
+          if (this.collision && l == this.nLayers - 1)
+            this.collision[i].push( 0 )
         }
       }
     }
@@ -272,22 +277,27 @@ class Map {
   }
 
   shrink(top, bottom, left, right){
-    /* todo
-       add collision
-    */
     for(let l = 0; l < this.nLayers; l++){
       for(let i = 0; i < top; i++){
         this.layers[l].shift()
+        if (this.collision && l == this.nLayers - 1)
+          this.collision.shift()
       }
       for(let i = 0; i < bottom; i++){
         this.layers[l].pop()
+        if (this.collision && l == this.nLayers - 1)
+          this.collision.pop()
       }
       for(let i = 0; i < this.layers[l].length; i++){
         for(let j = 0; j < left; j++){
           this.layers[l][i].shift()
+          if (this.collision && l == this.nLayers - 1)
+            this.collision[i].shift()
         }
         for(let j = 0; j < right; j++){
           this.layers[l][i].pop()
+          if (this.collision && l == this.nLayers - 1)
+            this.collision[i].pop()
         }
       }
     }
