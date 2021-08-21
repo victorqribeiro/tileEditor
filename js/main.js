@@ -41,20 +41,27 @@ const exportPNG = name => {
   })
 }
 
-const createLayerSelector = (nLayers = null) => {
+const createLayerSelector = (nLayers = null, collision = 0) => {
   if(!nLayers)
     nLayers = map.nLayers
   const select = $c('select')
   select.id = 'layerSelector'
+  if (collision) {
+    const opt = $c('option')
+    opt.value = -1
+    opt.innerText = `Collision`
+    select.appendChild( opt )
+  }
   for(let i = 0; i < nLayers; i++){
     const opt = $c('option')
     opt.value = i
     opt.innerText = `Layer ${i}`
     select.appendChild( opt )
   }
+  select.value = 0
   select.addEventListener('change', e => {
     map.activeLayer = select.value
-    $('#statusbar').innerHTML = `Active layer: ${select.value}.png`
+    $('#statusbar').innerHTML = `Active layer: ${select.value < 0 ? 'Collision' : select.value}`
   })
   return select
 }
@@ -67,7 +74,7 @@ const createCanvasMap = (width, height, gridWidth, gridHeight, nLayers, isometri
   subLayer.innerText = "-"
   subLayer.onclick = () => {
     map.removeLayer()
-    $('#layerSelector').innerHTML = createLayerSelector().innerHTML
+    $('#layerSelector').innerHTML = createLayerSelector(null, collision).innerHTML
     $('#layerSelector').value = map.activeLayer
     $('#statusbar').innerHTML = "Removed layer"
     map.show(c)
@@ -76,11 +83,11 @@ const createCanvasMap = (width, height, gridWidth, gridHeight, nLayers, isometri
   addLayer.innerText = "+"
   addLayer.onclick = () => {
     map.addLayer()
-    $('#layerSelector').innerHTML = createLayerSelector().innerHTML
+    $('#layerSelector').innerHTML = createLayerSelector(null, collision).innerHTML
     $('#layerSelector').value = map.activeLayer
     $('#statusbar').innerHTML = "Added new layer"
   }
-  layerSelector = createLayerSelector(nLayers)
+  layerSelector = createLayerSelector(nLayers, collision)
   canvasToolbar.appendChild(subLayer)
   canvasToolbar.appendChild(layerSelector)
   canvasToolbar.appendChild(addLayer)

@@ -138,53 +138,53 @@ class Map {
     this.needCanvasUpdate = true
   }
 
-  paintCustom(brush,nlayer,posy,posx){
+  paintCustom(brush, layer, posy, posx){
     if(this.isometric)
-      this.paintCustomIsometric(brush,nlayer,posy,posx)
+      this.paintCustomIsometric(brush, layer, posy, posx)
     else
-      this.paintCustomSquare(brush,nlayer,posy,posx)
+      this.paintCustomSquare(brush, layer, posy, posx)
   }
 
-  paintCustomSquare(brush,nlayer,posy,posx){
+  paintCustomSquare(brush, layer, posy, posx){
     for(let i = 0; i < brush.data.length; i++){
       for(let j = 0; j < brush.data[0].length; j++){
         if( posy+i < this.intH && posx+j < this.intW )
-          this.layers[nlayer][posy+i][posx+j] = brush.data[i][j]
+          layer[posy+i][posx+j] = brush.data[i][j]
       }
     }
   }
 
-  paintCustomIsometric(brush,nlayer,posy,posx){
+  paintCustomIsometric(brush, layer, posy, posx){
     const scaleV = Math.floor(texture.tileRealHeight/texture.tileHeight)
     for(let i = 0; i < brush.data.length; i++){
       for(let j = 0; j < brush.data[0].length; j++){
         const posY = posy + (i * scaleV) + j
         const posX = posx + (i * scaleV) - j
         if( posY < this.intH && posX < this.intW )
-          this.layers[nlayer][posY][posX] = brush.data[i][j]
+          layer[posY][posX] = brush.data[i][j]
       }
     }
   }
 
-  paintRandom(brush,nlayer,posy,posx){
-    this.layers[nlayer][posy][posx] = brush.data[Math.floor(Math.random() * brush.data.length)]
+  paintRandom(brush, layer, posy, posx){
+    layer[posy][posx] = brush.data[Math.floor(Math.random() * brush.data.length)]
   }
 
-  paintBucket(brush,nlayer,posy,posx){
-    const oldTile = this.layers[nlayer][posy][posx]
+  paintBucket(brush, layer, posy, posx){
+    const oldTile = layer[posy][posx]
     const visited = {}
     const toVisit = [[posy,posx]]
     const toVisitCheck = {}
     while(toVisit.length){
       const current = toVisit.shift()
-      this.layers[nlayer][current[0]][current[1]] = brush.data
+      layer[current[0]][current[1]] = brush.data
       visited[current] = true
       toVisitCheck[current] = true
 
       if( current[0]-1 >= 0
         && !([current[0]-1, current[1]] in visited)
         && !([current[0]-1, current[1]] in toVisitCheck)
-        && this.isEqual(this.layers[nlayer][current[0]-1][current[1]], oldTile)){
+        && this.isEqual(layer[current[0]-1][current[1]], oldTile)){
           toVisit.push( [current[0]-1,current[1]] )
           toVisitCheck[[current[0]-1,current[1]]] = true
       }
@@ -192,7 +192,7 @@ class Map {
       if( current[0]+1 < this.intH
         && !([current[0]+1,current[1]] in visited)
         && !([current[0]+1,current[1]] in toVisitCheck)
-        && this.isEqual(this.layers[nlayer][current[0]+1][current[1]], oldTile)){
+        && this.isEqual(layer[current[0]+1][current[1]], oldTile)){
           toVisit.push( [current[0]+1,current[1]] )
           toVisitCheck[[current[0]-1,current[1]]] = true
       }
@@ -200,7 +200,7 @@ class Map {
       if( current[1]-1 >= 0
         && !([current[0],current[1]-1] in visited)
         && !([current[0],current[1]-1] in toVisitCheck)
-        && this.isEqual(this.layers[nlayer][current[0]][current[1]-1], oldTile)){
+        && this.isEqual(layer[current[0]][current[1]-1], oldTile)){
         toVisit.push( [current[0],current[1]-1] )
         toVisitCheck[[current[0],current[1]-1]] = true
       }
@@ -208,7 +208,7 @@ class Map {
       if( current[1]+1 < this.intW
         && !([current[0],current[1]+1] in visited)
         && !([current[0],current[1]+1] in toVisitCheck)
-        && this.isEqual(this.layers[nlayer][current[0]][current[1]+1], oldTile)){
+        && this.isEqual(layer[current[0]][current[1]+1], oldTile)){
           toVisit.push( [current[0],current[1]+1] )
           toVisitCheck[[current[0],current[1]+1]] = true
       }
@@ -222,25 +222,22 @@ class Map {
   }
 
   addTile(brush, nlayer, posy, posx){
-    /* todo 
-      if nlayer < 0 we are paiting the collision map, pass the
-      collision or layer as reference to the function
-    */
+    const layer = nlayer < 0 ? this.collision : this.layers[nlayer]
     switch(brush.type){
       case 'default' :
-          this.layers[nlayer][posy][posx] = brush.data
+          layer[posy][posx] = brush.data
         break
       case 'custom' :
-          this.paintCustom(brush,nlayer,posy,posx)
+          this.paintCustom(brush, layer, posy, posx)
         break
       case 'random' :
-          this.paintRandom(brush,nlayer,posy,posx)
+          this.paintRandom(brush, layer, posy, posx)
         break
       case 'bucket' :
-          this.paintBucket(brush,nlayer,posy,posx)
+          this.paintBucket(brush, layer, posy, posx)
         break
       case 'drop' :
-          changeBrush(this.layers[nlayer][posy][posx])
+          changeBrush(layer[posy][posx])
         break
     }
   }
