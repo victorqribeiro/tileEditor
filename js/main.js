@@ -15,21 +15,6 @@ let brush = null,
   loadedTextures = {},
   texture
 
-const changeBrush = tile => {
-  if(!tile)
-    return
-  if(!brush)
-    brush = {}
-  if(brushDiv)
-    brushDiv.classList.remove('selected')
-  brush.type = 'default'
-  brush.data = tile ? tile : null
-  brushDiv = $(`#tile_${tile[0]*htile+tile[1]}`)
-  if(brushDiv)
-    brushDiv.classList.add('selected')
-  $('#statusbar').innerHTML = `selected tile: ${brush.data.join(',')}`
-}
-
 const exportPNG = name => {
   canvas.toBlob( blob => {
     const link = document.createElement('a')
@@ -39,31 +24,6 @@ const exportPNG = name => {
     link.click()
     $('#statusbar').innerHTML = `Saved ${name}.png`
   })
-}
-
-const createLayerSelector = (nLayers = null, collision = 0) => {
-  if(!nLayers)
-    nLayers = map.nLayers
-  const select = $c('select')
-  select.id = 'layerSelector'
-  if (collision) {
-    const opt = $c('option')
-    opt.value = -1
-    opt.innerText = `Collision`
-    select.appendChild( opt )
-  }
-  for(let i = 0; i < nLayers; i++){
-    const opt = $c('option')
-    opt.value = i
-    opt.innerText = `Layer ${i}`
-    select.appendChild( opt )
-  }
-  select.value = 0
-  select.addEventListener('change', e => {
-    map.activeLayer = select.value
-    $('#statusbar').innerHTML = `Active layer: ${select.value < 0 ? 'Collision' : select.value}`
-  })
-  return select
 }
 
 const createCanvasMap = (width, height, gridWidth, gridHeight, nLayers, isometric, collision) => {
@@ -194,185 +154,6 @@ const selectTool = tool => {
     }
 }
 
-const createTexturePalette = (imgSrc, imgName, tileRealWidth, tileRealHeight, border, tileWidth, tileHeight, bottomOffset) => {
-  // reset everything
-  $('#toolbar').innerHTML = ''
-  brush = null
-  brushDiv = null
-  customTiles = {}
-  customTileId = 0
-  randomTiles = {}
-  randomTileId = 0
-  loadedTextures = {}
-
-  imgName = imgName.replace(/.*\\/,'')
-  texture = new Texture(imgSrc, imgName, tileRealWidth, tileRealHeight, border, tileWidth, tileHeight, bottomOffset)
-  loadedTextures[texture.name] = true
-  const eraser = $c('div')
-  eraser.id = 'eraser'
-  eraser.title = 'Eraser'
-  eraser.className = 'tool'
-  eraser.innerText = '\uf12d'
-  eraser.onclick = () => selectTool('eraser')
-  const bucket = $c('div')
-  bucket.id = 'bucket'
-  bucket.title = 'Paint Bucket'
-  bucket.className = 'tool'
-  bucket.innerText = '\uf576'
-  bucket.onclick = () => selectTool('bucket')
-  const drop = $c('div')
-  drop.id = 'drop'
-  drop.title = 'Eye Dropper'
-  drop.className = 'tool'
-  drop.innerText = '\uf1fb'
-  drop.onclick = () => selectTool('drop')
-  const tools = $c('div')
-  tools.id = 'tools'
-  tools.appendChild(eraser)
-  tools.appendChild(bucket)
-  tools.appendChild(drop)
-  $('#toolbar').appendChild(tools)
-
-  texture.load(() => {
-    $('#statusbar').innerHTML = `Texture file ${imgName} loaded`
-    htile = Math.floor(texture.image.width / (texture.tileRealWidth+texture.border))
-    vtile = Math.floor(texture.image.height / (texture.tileRealHeight+texture.border))
-    const tileIcons = $c('div')
-    tileIcons.id = 'tileIcons'
-    tileIcons.style.width = `${htile * texture.tileRealWidth}px`
-    for(let i = 0; i < vtile; i++){
-      for(let j = 0; j < htile; j++){
-        const tileIcon = $c('div')
-        tileIcon.id = 'tile_' + (i * htile + j)
-        tileIcon.className = 'tileIcon'
-        tileIcon.style.width = tileRealWidth + 'px'
-        tileIcon.style.height = tileRealHeight + 'px'
-        tileIcon.style.background =
-          `url('${texture.src}') -${j*(texture.tileRealWidth+texture.border)}px -${i*(texture.tileRealHeight+texture.border)}px`
-        tileIcon.onclick = () => changeBrush([i,j])
-        tileIcons.appendChild( tileIcon )
-      }
-    }
-    $('#toolbar').appendChild( tileIcons )
-  })
-}
-
-const createNewCustomBrush = (tileWidth, tileHeight, htile, vtile) => {
-  ++customTileId
-  const tile = $c('div')
-  tile.id = customTileId
-  tile.className = 'tile'
-  tile.style.width = tileWidth * htile + 'px'
-  tile.style.height = tileHeight * vtile + 10 + 'px'
-  const border = $c('div')
-  border.title = `Select tile: custom tile ${tile.id}`
-  border.style.width = tileWidth * htile + 'px'
-  border.style.height = '10px'
-  border.className = 'tileBorder'
-  border.onclick = () => {
-    brush = {
-      'type': 'custom',
-      'data': customTiles[tile.id]
-    }
-    if(brushDiv){
-      brushDiv.classList.remove('selected')
-      brushDiv = null
-    }
-    $('#statusbar').innerHTML = `selected tile: custom tile ${tile.id}`
-  }
-  tile.appendChild( border )
-  for(let i = 0; i < vtile; i++){
-    for(let j = 0; j < htile; j++){
-      const square = $c('div')
-      square.className = 'square'
-      square.style.width = tileWidth + 'px'
-      square.style.height = tileHeight + 'px'
-      square.onclick = () => {
-        if( !brushDiv || brush.type != 'default' )
-          return
-        square.style.background = brushDiv.style.background
-        customTiles[tile.id][i][j] = brush.data
-        if(brushDiv){
-          brushDiv.classList.remove('selected')
-          brushDiv = null
-        }
-      }
-      tile.appendChild( square )
-    }
-  }
-  const borderDel = $c('div')
-  borderDel.title = `Deleted tile: custom tile ${tile.id}`
-  borderDel.style.width = tileWidth * htile + 'px'
-  borderDel.style.height = '10px'
-  borderDel.className = 'tileBorderDelete'
-  borderDel.onclick = () => {
-    tile.remove()
-    brush = null
-    delete customTiles[tile.id]
-    $('#statusbar').innerHTML = `Deleted tile: custom tile ${tile.id}`
-  }
-  tile.appendChild( borderDel )
-  $('#toolbar').appendChild( tile )
-  customTiles[tile.id] = Array(vtile).fill().map( _ => Array(htile).fill(0) )
-}
-
-const createNewRandomBrush = (tileWidth, tileHeight, htile) => {
-  ++randomTileId
-  const tile = $c('div')
-  tile.id = randomTileId
-  tile.className = 'tile'
-  tile.style.width = tileWidth * htile + 'px'
-  tile.style.height = tileHeight + 10 + 'px'
-  const border = $c('div')
-  border.title = `Select tile: random tile ${tile.id}`
-  border.style.width = tileWidth * htile + 'px'
-  border.style.height = '10px'
-  border.className = 'tileBorder'
-  border.onclick = () => {
-    brush = {
-      'type': 'random',
-      'data': randomTiles[tile.id]
-    }
-    if(brushDiv){
-      brushDiv.classList.remove('selected')
-      brushDiv = null
-    }
-    $('#statusbar').innerHTML = `selected tile: random tile ${tile.id}`
-  }
-  tile.appendChild( border )
-  for(let j = 0; j < htile; j++){
-    const square = $c('div')
-    square.className = 'square'
-    square.style.width = tileWidth + 'px'
-    square.style.height = tileHeight + 'px'
-    square.onclick = () => {
-      if( !brushDiv || brush.type != 'default' )
-        return
-      square.style.background = brushDiv.style.background
-      randomTiles[tile.id][j] = brush.data
-      if(brushDiv){
-        brushDiv.classList.remove('selected')
-        brushDiv = null
-      }
-    }
-    tile.appendChild( square )
-  }
-  const borderDel = $c('div')
-  borderDel.title = `Deleted tile: random tile ${tile.id}`
-  borderDel.style.width = tileWidth * htile + 'px'
-  borderDel.style.height = '10px'
-  borderDel.className = 'tileBorderDelete'
-  borderDel.onclick = () => {
-    tile.remove()
-    brush = null
-    delete randomTiles[tile.id]
-    $('#statusbar').innerHTML = `Deleted tile: random tile ${tile.id}`
-  }
-  tile.appendChild( borderDel )
-  $('#toolbar').appendChild( tile )
-  randomTiles[tile.id] = Array(htile).fill(0)
-}
-
 const save = (name) => {
   const URL = window.URL || window.webkitURL
   map['textures'] = Object.keys(loadedTextures)
@@ -404,6 +185,8 @@ const load = async file => {
   $('#layerSelector').innerHTML = createLayerSelector(map.nLayers).innerHTML
   $('#statusbar').innerHTML = `Map ${file.name} loaded with success!`
 }
+
+createToolbar()
 
 // code here only for example
 window.onload = () => {

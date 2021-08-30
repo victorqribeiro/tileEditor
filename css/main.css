@@ -155,7 +155,7 @@ canvas {
     left: 0;
 }
 
-#tileIcons {
+#tileIcons, #collisionTiles {
 	display: flex;
 	flex-wrap: wrap;
 }
@@ -164,6 +164,12 @@ canvas {
 	display: block;
 	border: dashed 1px #CCC;
 	box-sizing: border-box;
+}
+
+.collisionTileIcon {
+  display: block;
+  box-sizing: border-box;
+  margin: 2px;
 }
 
 .tile {

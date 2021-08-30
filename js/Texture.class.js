@@ -14,9 +14,9 @@ class Texture {
   load(callback){
     const url = window.URL || window.webkitURL
     this.image = new Image()
+    this.image.onload = callback
     this.src = this.src instanceof File ? url.createObjectURL(this.src) : this.src
     this.image.src = this.src
-    this.image.onload = callback
   }
 
 }
