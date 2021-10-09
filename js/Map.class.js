@@ -9,6 +9,7 @@ class Map {
     this.activeLayer = 0
     this.isometric = isometric
     this.collision = collision == 0 ? null : Array(this.intH).fill().map( _ => Array(this.intW).fill(0))
+    this.showCollision = false
     this.grid = true
     this.layers = Array(this.nLayers).fill().map( __ => Array(this.intH).fill().map( _ => Array(this.intW).fill(0)))
     this.calculateMapSize()
@@ -29,7 +30,7 @@ class Map {
     c.save()
     c.translate((y-x) * this.gridWidth/2, (x+y) * this.gridHeight/2)
     c.beginPath()
-    c.moveTo(0,0)
+    c.moveTo(0, 0)
     c.lineTo(this.gridWidth/2, this.gridHeight/2)
     c.lineTo(0, this.gridHeight)
     c.lineTo(-this.gridWidth/2, this.gridHeight/2)
@@ -76,6 +77,16 @@ class Map {
       this.gridHeight
     )
   }
+ 
+  showSquaredCollisionTile(c, i, j){
+    c.fillStyle = $(`#collision_tile_${this.collision[i][j]}`).backgroundColor || "rgba(255, 0, 0, 0.25)"
+    c.fillRect(
+      j * this.gridWidth, 
+      i * this.gridHeight, 
+      this.gridWidth,
+      this.gridHeight
+    )
+  }
     
   showIsometricTile(c, x, y, i, j){
     c.save()
@@ -89,6 +100,11 @@ class Map {
       texture.tileRealWidth, texture.tileRealHeight
     )
     c.restore()
+  }
+
+  showIsometricCollisionTile(c, i, j){
+    const color = $(`#collision_tile_${this.collision[i][j]}`).backgroundColor || "rgba(255, 0, 0, 0.25)"
+    this.drawIsometricTile(c, i, j, color, 'rgba(0,0,0,0)')
   }
 
   show(c){
@@ -119,6 +135,18 @@ class Map {
         }
       }
     }
+    if(this.showCollision) {
+      for(let i = 0; i < this.intH; i++){
+        for(let j = 0; j < this.intW; j++){
+          if(!map.collision[i][j])
+            continue
+          if(this.isometric)
+            this.showIsometricCollisionTile(c, i, j)
+          else
+            this.showSquaredCollisionTile(c, i, j)
+        }
+      }
+    }
     if(this.isometric)  
       c.restore()
   }
@@ -134,7 +162,6 @@ class Map {
     this.layers = data.layers
     this.isometric = data.isometric
     this.collision = data.collision
-    this.textures = data.textures
     this.needCanvasUpdate = true
   }
 

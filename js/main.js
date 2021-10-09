@@ -52,17 +52,13 @@ const createCanvasMap = (width, height, gridWidth, gridHeight, nLayers, isometri
   canvasToolbar.appendChild(layerSelector)
   canvasToolbar.appendChild(addLayer)
   
-  const gridLabel = $c('label')
-  gridLabel.innerText = "Grid: "
-  const gridCheck = $c('input')
-  gridCheck.type = "checkbox"
-  gridCheck.checked = true
-  gridCheck.onclick = () => {
-    map.grid = gridCheck.checked
-    map.show(c)
+  const showGrid = createCheckbox('Show grid: ', function(){map.grid = this.checked, map.show(c)}, true)
+  canvasToolbar.appendChild(showGrid)
+  
+  if (collision) {
+    const showCollision = createCheckbox('Show collision: ', function(){map.showCollision = this.checked, map.show(c)}, false)
+    canvasToolbar.appendChild(showCollision)
   }
-  gridLabel.appendChild(gridCheck)
-  canvasToolbar.appendChild(gridLabel)
   
   canvas = $c('canvas')
   canvas.width = map.width
@@ -178,11 +174,11 @@ const load = async file => {
     $('#statusbar').innerHTML = `Missing textures: ${data.textures.join(', ')}`
     return
   }
-  createCanvasMap(data.width, data.height, data.tileSize, data.border, data.tileSizeDraw, data.nLayers)
-  map = new Map()
+  /*todo refactor createCanvasMap */
+  createCanvasMap(data.width, data.height, data.gridWidth, data.gridHeight, data.nLayers, data.isometric, data.collision)
   map.load(data)
   map.show(c)
-  $('#layerSelector').innerHTML = createLayerSelector(map.nLayers).innerHTML
+  // $('#layerSelector').innerHTML = createLayerSelector(map.nLayers, map.collision).innerHTML
   $('#statusbar').innerHTML = `Map ${file.name} loaded with success!`
 }
 
