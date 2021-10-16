@@ -79,7 +79,7 @@ class Map {
   }
  
   showSquaredCollisionTile(c, i, j){
-    c.fillStyle = $(`#collision_tile_${this.collision[i][j]}`).backgroundColor || "rgba(255, 0, 0, 0.25)"
+    c.fillStyle = $(`#collision_tile_${this.collision[i][j]}`).style.backgroundColor || "rgba(255, 0, 0, 0.25)"
     c.fillRect(
       j * this.gridWidth, 
       i * this.gridHeight, 
@@ -103,7 +103,7 @@ class Map {
   }
 
   showIsometricCollisionTile(c, i, j){
-    const color = $(`#collision_tile_${this.collision[i][j]}`).backgroundColor || "rgba(255, 0, 0, 0.25)"
+    const color = $(`#collision_tile_${this.collision[i][j]}`).style.backgroundColor || "rgba(255, 0, 0, 0.25)"
     this.drawIsometricTile(c, i, j, color, 'rgba(0,0,0,0)')
   }
 
