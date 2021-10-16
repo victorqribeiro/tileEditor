@@ -102,8 +102,7 @@ const createCollisionPallete = (nCollisionTiles = 1, tileWidth, tileHeight) => {
 
 const createTexturePalette = (imgSrc, imgName, tileRealWidth, tileRealHeight, border, tileWidth, tileHeight, bottomOffset, isometric) => {
 
-  if (map && map.collision)
-    createCollisionPallete(10, tileWidth, tileHeight)
+  createCollisionPallete(10, tileWidth, tileHeight)
 
   brush = null
   brushDiv = null
