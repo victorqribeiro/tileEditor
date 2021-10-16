@@ -1,6 +1,6 @@
 class Texture {
 
-  constructor(imgSrc, imgName, tileRealWidth, tileRealHeight, border, tileWidth, tileHeight, bottomOffset){
+  constructor(imgSrc, imgName, tileRealWidth, tileRealHeight, border, tileWidth, tileHeight, bottomOffset, isometric){
     this.src = imgSrc
     this.name = imgName
     this.tileRealWidth = tileRealWidth
@@ -9,6 +9,7 @@ class Texture {
     this.tileWidth = tileWidth
     this.tileHeight = tileHeight
     this.bottomOffset = bottomOffset
+    this.isometric = isometric
   }
 
   load(callback){

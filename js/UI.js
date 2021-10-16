@@ -100,9 +100,10 @@ const createCollisionPallete = (nCollisionTiles = 1, tileWidth, tileHeight) => {
   $('#toolbar').appendChild(collisionTiles)
 }
 
-const createTexturePalette = (imgSrc, imgName, tileRealWidth, tileRealHeight, border, tileWidth, tileHeight, bottomOffset) => {
+const createTexturePalette = (imgSrc, imgName, tileRealWidth, tileRealHeight, border, tileWidth, tileHeight, bottomOffset, isometric) => {
 
-  createCollisionPallete(10, tileWidth, tileHeight)
+  if (map && map.collision)
+    createCollisionPallete(10, tileWidth, tileHeight)
 
   brush = null
   brushDiv = null
@@ -113,28 +114,30 @@ const createTexturePalette = (imgSrc, imgName, tileRealWidth, tileRealHeight, bo
   loadedTextures = {}
 
   imgName = imgName.replace(/.*\\/,'')
-  texture = new Texture(imgSrc, imgName, tileRealWidth, tileRealHeight, border, tileWidth, tileHeight, bottomOffset)
+  texture = new Texture(imgSrc, imgName, tileRealWidth, tileRealHeight, border, tileWidth, tileHeight, bottomOffset, isometric)
   loadedTextures[texture.name] = true
 
   texture.load(() => {
     $('#statusbar').innerHTML = `Texture file ${imgName} loaded`
-    htile = Math.round(texture.image.width / (texture.tileRealWidth+texture.border))
-    vtile = Math.round(texture.image.height / (texture.tileRealHeight+texture.border))
+    const tWidth = (isometric ? tileRealWidth : tileWidth)
+    const tHeight = (isometric ? tileRealHeight : tileHeight)
+    htile = Math.round(texture.image.width / (texture.tileRealWidth + texture.border))
+    vtile = Math.round(texture.image.height / (texture.tileRealHeight + texture.border))
     const tileIcons = $c('div')
     tileIcons.id = 'tileIcons'
-    tileIcons.style.width = `${htile * texture.tileWidth}px`
+    tileIcons.style.width = `${htile * tWidth}px`
     for(let i = 0; i < vtile; i++){
       for(let j = 0; j < htile; j++){
         const tileIcon = $c('div')
         tileIcon.id = 'tile_' + (i * htile + j)
         tileIcon.className = 'tileIcon'
-        tileIcon.style.width = tileWidth + 'px'
-        tileIcon.style.height = tileHeight + 'px'
+        tileIcon.style.width = tWidth + 'px'
+        tileIcon.style.height = tHeight + 'px'
         tileIcon.style.imageRendering = 'crisp-edges'
         tileIcon.style.imageRendering = 'pixelated'
         tileIcon.style.backgroundImage = `url('${texture.src}')`
-        tileIcon.style.backgroundSize = `${htile * texture.tileWidth}px ${vtile * texture.tileHeight}px`
-        tileIcon.style.backgroundPosition = `-${j*(texture.tileWidth)}px -${i*(texture.tileHeight)}px`
+        tileIcon.style.backgroundSize = `${htile * tWidth}px ${vtile * tHeight}px`
+        tileIcon.style.backgroundPosition = `-${j * tWidth}px -${i * tHeight}px`
         tileIcon.onclick = () => changeBrush([i,j])
         tileIcons.appendChild( tileIcon )
       }

@@ -142,7 +142,8 @@ const Menu  = {
           'border': 'number',
           'tileWidth': 'number',
           'tileHeight': 'number',
-          'bottomOffset': 'number'
+          'bottomOffset': 'number',
+          'isometric': 'checkbox'
         }
         return Menu.showWindow( conf, Menu.texture.load )
       }

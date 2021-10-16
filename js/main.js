@@ -207,11 +207,11 @@ window.onload = () => {
     const url = new URL(document.location)
     example = url.searchParams.get('example')
     if(example === '01'){
+      createCanvasMap(20, 20, 64, 32, 1, 1)
       createTexturePalette(
         'myCityTiles/myCityTiles-64x32.png',
-        'myCityTiles-64x32.png', 64, 96, 0, 64, 32, 0
+        'myCityTiles-64x32.png', 64, 96, 0, 64, 32, 0, 1
       )
-      createCanvasMap(20, 20, 64, 32, 1, 1)
       $('#canvasarea').style.width = '60%'
     }
   }
