@@ -15,6 +15,8 @@ const changeBrush = tile => {
   }else{
     brush.type = 'default'
     brush.data = tile
+    $('#layerSelector').selectedIndex = 0
+    map.activeLayer = -1
   } 
 }
 

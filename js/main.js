@@ -60,6 +60,23 @@ const createCanvasMap = (width, height, gridWidth, gridHeight, nLayers, isometri
     canvasToolbar.appendChild(showCollision)
   }
   
+  const clearLayer = $c('button')
+  clearLayer.innerText = "Clear layer"
+  clearLayer.onclick = () => {
+    const layerName = map.activeLayer >= 0 ? map.activeLayer : 'collision'
+    if (!confirm(`Are you sure you want to clear layer ${layerName}`))
+      return
+    let _map = map.collision
+    if (map.activeLayer >= 0)
+      _map = map.layers[map.activeLayer]
+    for (let i = 0; i < _map.length; i++)
+      for (let j = 0; j < _map[0].length; j++)
+        _map[i][j] = 0
+    map.show(c)
+    $('#statusbar').innerHTML = `Cleared layer ${layerName}`
+  }
+  canvasToolbar.appendChild(clearLayer)
+  
   canvas = $c('canvas')
   canvas.width = map.width
   canvas.height = map.height
