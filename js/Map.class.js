@@ -249,7 +249,7 @@ class Map {
   }
 
   addTile(brush, nlayer, posy, posx){
-    if (typeof brush.data == 'number' && nlayer >= 0)
+    if (typeof brush.data == 'number' && brush.data > 0 && nlayer >= 0)
       return alert('collision tiles must be used on collision layer')
     if (brush.data instanceof Array && nlayer < 0)
       return alert('Tiles are not supposed to be used in collision layer')
