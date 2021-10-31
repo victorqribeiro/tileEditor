@@ -93,7 +93,7 @@ const createCollisionPallete = (nCollisionTiles = 1, tileWidth, tileHeight) => {
     collisionTile.className = 'collisionTileIcon'
     collisionTile.style.width = tileWidth + 'px'
     collisionTile.style.height = tileHeight + 'px'
-    collisionTile.style.backgroundColor = 'hsl(' + (i * 10) % 360 + ', 50%, 50%)'
+    collisionTile.style.backgroundColor = 'hsl(' + (i * 30) % 360 + ', 50%, 50%)'
     collisionTile.onclick = () => changeBrush(i)
     collisionTiles.appendChild(collisionTile)
   }

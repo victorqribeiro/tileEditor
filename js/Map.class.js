@@ -115,8 +115,6 @@ class Map {
       this.needCanvasUpdate = false
     }
     c.clearRect(0, 0, this.width, this.height)
-    if(this.grid)
-      this.showGrid(c)
     if(this.isometric){
       c.save()
       c.translate((this.intW * this.gridWidth)/2 + (this.intH-this.intW) * this.gridWidth/2, 0)
@@ -135,6 +133,7 @@ class Map {
         }
       }
     }
+    c.globalAlpha = 0.6
     if(this.showCollision) {
       for(let i = 0; i < this.intH; i++){
         for(let j = 0; j < this.intW; j++){
@@ -147,8 +146,11 @@ class Map {
         }
       }
     }
+    c.globalAlpha = 1
     if(this.isometric)  
       c.restore()
+    if(this.grid)
+      this.showGrid(c)
   }
 
   load(data){
