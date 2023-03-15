@@ -132,7 +132,6 @@ const createTexturePalette = (imgSrc, imgName, tileRealWidth, tileRealHeight, bo
         tileIcon.className = 'tileIcon'
         tileIcon.style.width = tWidth + 'px'
         tileIcon.style.height = tHeight + 'px'
-        tileIcon.style.imageRendering = 'crisp-edges'
         tileIcon.style.imageRendering = 'pixelated'
         tileIcon.style.backgroundImage = `url('${texture.src}')`
         tileIcon.style.backgroundSize = `${htile * tWidth}px ${vtile * tHeight}px`
@@ -178,7 +177,10 @@ const createNewCustomBrush = (tileWidth, tileHeight, htile, vtile) => {
       square.onclick = () => {
         if( !brushDiv || brush.type != 'default' )
           return
-        square.style.background = brushDiv.style.background
+        square.style.imageRendering = brushDiv.style.imageRendering
+        square.style.backgroundImage = brushDiv.style.backgroundImage
+        square.style.backgroundSize = brushDiv.style.backgroundSize
+        square.style.backgroundPosition = brushDiv.style.backgroundPosition
         customTiles[tile.id][i][j] = brush.data
         if(brushDiv){
           brushDiv.classList.remove('selected')
@@ -236,7 +238,10 @@ const createNewRandomBrush = (tileWidth, tileHeight, htile) => {
     square.onclick = () => {
       if( !brushDiv || brush.type != 'default' )
         return
-      square.style.background = brushDiv.style.background
+      square.style.imageRendering = brushDiv.style.imageRendering
+      square.style.backgroundImage = brushDiv.style.backgroundImage
+      square.style.backgroundSize = brushDiv.style.backgroundSize
+      square.style.backgroundPosition = brushDiv.style.backgroundPosition
       randomTiles[tile.id][j] = brush.data
       if(brushDiv){
         brushDiv.classList.remove('selected')
