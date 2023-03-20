@@ -3,18 +3,23 @@ html, body {
 	padding: 0;
 	height: 100%;
 	width: 100%;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    font-family: Sans Serif;
-    background-color: #FFF;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  font-family: Sans Serif;
+  background-color: #FFF;
 }
 
 canvas {
-    display: block;
+  display: block;
+  image-rendering: pixelated;
+}
+
+.tileIcon {
+  image-rendering: pixelated;
 }
 
 #desktop {
@@ -26,37 +31,37 @@ canvas {
 
 
 #menubar {
-    flex-basis: 1.1em;
-    flex-grow: 0;
-    background-color: #777;
+  flex-basis: 1.1em;
+  flex-grow: 0;
+  background-color: #777;
 }
 
 #middle {
-    display: flex;
-    flex-direction: row;
-    flex-grow: 1;
-    overflow: auto;
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  overflow: auto;
 }
 
 #statusbar {
-    flex-basis: 1.1em;
-    flex-grow: 0;
-    background-color: #777;
+  flex-basis: 1.1em;
+  flex-grow: 0;
+  background-color: #777;
 }
 
 #canvasarea {
-    flex-grow: 1;
-    flex-shrink: 0;
-    flex-basis: auto;
-    overflow: auto;
-    resize: horizontal;
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-basis: auto;
+  overflow: auto;
+  resize: horizontal;
 }
 
 #toolbar {
-    flex-grow: 1;
-    flex-shrink: 1;
-    flex-basis: auto;
-    overflow: auto;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: auto;
+  overflow: auto;
 }
 
 .tool {

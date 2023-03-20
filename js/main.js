@@ -192,7 +192,7 @@ const load = async file => {
     return
   }
   /*todo refactor createCanvasMap */
-  createCanvasMap(data.width, data.height, data.gridWidth, data.gridHeight, data.nLayers, data.isometric, data.collision)
+  createCanvasMap()
   map.load(data)
   map.show(c)
   // $('#layerSelector').innerHTML = createLayerSelector(map.nLayers, map.collision).innerHTML
