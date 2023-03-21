@@ -18,7 +18,7 @@ canvas {
   image-rendering: pixelated;
 }
 
-.tileIcon {
+.tileIcon, .square {
   image-rendering: pixelated;
 }
 
