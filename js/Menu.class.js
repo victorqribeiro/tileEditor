@@ -127,8 +127,15 @@ const Menu  = {
       }
       map.shrink(...arguments.map(x => parseInt(x) || 0))
       map.show(c)
+    },
+    'addCollision': () => {
+      if(!map) return
+      map.addCollision()
+    },
+    'removeCollision': () => {
+      if (!map) return
+      map.removeCollision()
     }
-
   },
 
   'texture': {

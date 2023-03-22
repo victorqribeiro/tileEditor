@@ -12,7 +12,7 @@ $('body').addEventListener('click', e => {
       break
     case 'menu_content' :
         const root = e.target.parentNode.parentNode.innerText.toLowerCase()
-        const opt = e.target.innerText.toLowerCase()
+        const opt = e.target.innerText.replace(/(?:^\w|[A-Z]|\b\w)/g, (str, i) => i ? str.toUpperCase() : str.toLowerCase()).replace(/\s+/g, '');
         if( root in Menu && opt in Menu[root] )
 	        Menu[root][opt]()
       break

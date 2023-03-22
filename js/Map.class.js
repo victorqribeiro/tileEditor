@@ -348,5 +348,15 @@ class Map {
     this.nLayers = this.layers.length
     this.activeLayer = this.nLayers-1
   }
+  
+  addCollision() {
+    this.collision = Array(this.intH).fill().map( _ => Array(this.intW).fill(0))
+    this.needCanvasUpdate = true
+  }
+  
+  removeCollision() {
+    this.collision = null
+    this.needCanvasUpdate = true
+  }
 
 }
